@@ -1,7 +1,5 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import {
   guardiaAreaSchema,
@@ -19,6 +17,7 @@ import type {
   GuardiaParteConRegistros,
   GuardiaAreaConPerifericos,
 } from "@/types/database";
+import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
 
 type ActionResult = {
   success: boolean;
@@ -26,30 +25,15 @@ type ActionResult = {
   error?: string;
 };
 
-async function requireAuth() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("No autenticado");
-  return { supabase, user };
-}
-
-function getAdminClient() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-}
-
 // ============================================================================
-// AREAS
+// AREAS (config: admin, jefe)
 // ============================================================================
 
 export async function getGuardiaAreas(): Promise<ActionResult> {
   try {
+    await requireAuth();
     const admin = getAdminClient();
+
     const { data: areas, error: areasError } = await admin
       .from("guardia_areas")
       .select("*")
@@ -77,7 +61,7 @@ export async function getGuardiaAreas(): Promise<ActionResult> {
 
 export async function createGuardiaArea(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { data: profile } = await admin
@@ -117,7 +101,7 @@ export async function createGuardiaArea(formData: FormData) {
 
 export async function updateGuardiaArea(id: string, formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const validated = guardiaAreaSchema.parse({
@@ -143,7 +127,7 @@ export async function updateGuardiaArea(id: string, formData: FormData) {
 
 export async function deleteGuardiaArea(id: string) {
   try {
-    const { user } = await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { count } = await admin
@@ -169,12 +153,12 @@ export async function deleteGuardiaArea(id: string) {
 }
 
 // ============================================================================
-// PERIFERICOS
+// PERIFERICOS (config: admin, jefe)
 // ============================================================================
 
 export async function createGuardiaPeriferico(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const validated = guardiaPerifericoSchema.parse({
@@ -199,7 +183,7 @@ export async function createGuardiaPeriferico(formData: FormData) {
 
 export async function deleteGuardiaPeriferico(id: string) {
   try {
-    const { user } = await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
@@ -216,12 +200,14 @@ export async function deleteGuardiaPeriferico(id: string) {
 }
 
 // ============================================================================
-// PARTES
+// PARTES (crear: admin/jefe/tecnico; eliminar: admin/jefe)
 // ============================================================================
 
 export async function getGuardiaPartes(): Promise<ActionResult> {
   try {
+    await requireAuth();
     const admin = getAdminClient();
+
     const { data, error } = await admin
       .from("guardia_partes")
       .select("*")
@@ -237,6 +223,7 @@ export async function getGuardiaPartes(): Promise<ActionResult> {
 
 export async function getGuardiaParte(id: string): Promise<ActionResult> {
   try {
+    await requireAuth();
     const admin = getAdminClient();
 
     const { data: parte, error: parteError } = await admin
@@ -279,7 +266,7 @@ export async function getGuardiaParte(id: string): Promise<ActionResult> {
 
 export async function createGuardiaParte(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.GUARDIA_WRITE);
     const admin = getAdminClient();
 
     const { data: profile } = await admin
@@ -344,15 +331,15 @@ export async function createGuardiaParte(formData: FormData) {
 }
 
 // ============================================================================
-// ENTREGA
+// ENTREGA (admin/jefe/tecnico, pero ademas se valida que solo el dueno edite)
 // ============================================================================
 
 export async function saveEntrega(registroId: string, formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.GUARDIA_WRITE);
     const admin = getAdminClient();
 
-    // Verificar permisos: solo el dueño o admin/jefe puede editar
+    // Verificar que el usuario sea el dueno o admin/jefe
     const { data: registro } = await admin
       .from("guardia_registros")
       .select("entregado_por_user_id")
@@ -414,15 +401,15 @@ export async function saveEntrega(registroId: string, formData: FormData) {
 }
 
 // ============================================================================
-// RECIBO
+// RECIBO (admin/jefe/tecnico, pero ademas se valida que solo el dueno edite)
 // ============================================================================
 
 export async function saveRecibo(registroId: string, formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.GUARDIA_WRITE);
     const admin = getAdminClient();
 
-    // Verificar permisos: solo el dueño o admin/jefe puede editar
+    // Verificar que el usuario sea el dueno o admin/jefe
     const { data: registro } = await admin
       .from("guardia_registros")
       .select("recibido_por_user_id")
@@ -503,12 +490,12 @@ export async function saveRecibo(registroId: string, formData: FormData) {
 }
 
 // ============================================================================
-// COMPLETAR PARTE
+// COMPLETAR PARTE (admin, jefe)
 // ============================================================================
 
 export async function completarGuardiaParte(parteId: string) {
   try {
-    const { user } = await requireAuth();
+    await requireRole(ROLES.GUARDIA_DELETE);
     const admin = getAdminClient();
 
     const { data: registros } = await admin
@@ -543,12 +530,12 @@ export async function completarGuardiaParte(parteId: string) {
 }
 
 // ============================================================================
-// ELIMINAR PARTE
+// ELIMINAR PARTE (admin, jefe)
 // ============================================================================
 
 export async function deleteGuardiaParte(id: string) {
   try {
-    const { user } = await requireAuth();
+    await requireRole(ROLES.GUARDIA_DELETE);
     const admin = getAdminClient();
 
     await admin.from("guardia_detalle").delete().in(

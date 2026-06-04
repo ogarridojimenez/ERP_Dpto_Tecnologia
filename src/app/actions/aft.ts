@@ -1,9 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
-import { areaAftSchema, controlAftSchema, mbAreaSchema } from "@/lib/schemas/aft";
+import { areaAftSchema, controlAftSchema } from "@/lib/schemas/aft";
+import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
 
 type ActionResult<T = unknown> = {
   success: boolean;
@@ -11,28 +10,13 @@ type ActionResult<T = unknown> = {
   error?: string;
 };
 
-async function requireAuth() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("No autenticado");
-  return { supabase, user };
-}
-
-function getAdminClient() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-}
-
 // ============================================================================
 // ÁREAS AFT
 // ============================================================================
 
 export async function createArea(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { data: profile } = await admin.from("profiles").select("organization_id").eq("id", user.id).single();
@@ -63,7 +47,6 @@ export async function createArea(formData: FormData) {
       return { success: false, error: error.message } as ActionResult;
     }
 
-    // Garantizar que el frontend reciba el id correcto para navegar a /aft/areas/[id]
     revalidatePath("/aft/areas");
     return { success: true, data } as ActionResult<{ id: string; codigo: string; nombre: string }>;
   } catch (e) {
@@ -73,7 +56,7 @@ export async function createArea(formData: FormData) {
 
 export async function updateArea(id: string, formData: FormData) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const validated = areaAftSchema.parse({
@@ -99,10 +82,9 @@ export async function updateArea(id: string, formData: FormData) {
 
 export async function deleteArea(id: string) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
-    // Verificar que no tenga controles activos
     const { data: controles } = await admin
       .from("controles_aft")
       .select("id")
@@ -133,7 +115,7 @@ export async function deleteArea(id: string) {
 
 export async function uploadAreaExcel(areaId: string, formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const file = formData.get("file") as File;
@@ -141,35 +123,29 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
       return { success: false, error: "No se proporcionó archivo" } as ActionResult;
     }
 
-    // Parsear Excel
     const XLSX = await import("xlsx");
     const buffer = Buffer.from(await file.arrayBuffer());
     const wb = XLSX.read(buffer, { type: "buffer" });
     const sheet = wb.Sheets[wb.SheetNames[0]];
     const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
 
-    // Extraer MBs (regex: /^(mb|MB)\d+/)
     const MB_REGEX = /^(mb|MB)\d+/;
     const mbs: Array<{ mb: string; descripcion: string | null }> = [];
 
     for (const row of rows) {
-      // Buscar en todas las celdas una que coincida con el patrón MB
       let mbValue: string | null = null;
       let descripcion: string | null = null;
 
       for (let i = 0; i < row.length; i++) {
         const cell = String(row[i] || "").trim();
         if (MB_REGEX.test(cell)) {
-          mbValue = cell.replace(/\s+/g, "").toUpperCase(); // Normalizar: quitar espacios y mayúsculas
-          // La descripción suele estar en la misma fila, columna siguiente
+          mbValue = cell.replace(/\s+/g, "").toUpperCase();
           if (i + 1 < row.length) {
             const next = String(row[i + 1] || "").trim();
-            // Solo tomar si es texto, no número
             if (next && !MB_REGEX.test(next) && isNaN(Number(next))) {
               descripcion = next;
             }
           }
-          // Si no, buscar la siguiente celda no vacía hacia la derecha
           if (!descripcion) {
             for (let j = i + 1; j < Math.min(i + 5, row.length); j++) {
               const next = String(row[j] || "").trim();
@@ -192,7 +168,6 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
       return { success: false, error: "No se encontraron MBs válidos en el Excel (formato: mb000012345)" } as ActionResult;
     }
 
-    // Eliminar MBs anteriores del área
     const { error: delErr } = await admin
       .from("mb_area")
       .delete()
@@ -200,7 +175,6 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
 
     if (delErr) return { success: false, error: "Error limpiando MBs anteriores: " + delErr.message } as ActionResult;
 
-    // Insertar nuevos MBs
     const records = mbs.map(m => ({
       area_id: areaId,
       mb: m.mb,
@@ -230,7 +204,7 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
 
 export async function createControl(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { data: profile } = await admin.from("profiles").select("organization_id").eq("id", user.id).single();
@@ -243,7 +217,6 @@ export async function createControl(formData: FormData) {
       return { success: false, error: "El área es obligatoria" } as ActionResult;
     }
 
-    // Verificar que el área tenga MBs
     const { count: mbCount } = await admin
       .from("mb_area")
       .select("*", { count: "exact", head: true })
@@ -260,7 +233,6 @@ export async function createControl(formData: FormData) {
       observaciones: formData.get("observaciones") as string,
     });
 
-    // Crear el control
     const { data: control, error: cErr } = await admin
       .from("controles_aft")
       .insert({
@@ -273,7 +245,6 @@ export async function createControl(formData: FormData) {
 
     if (cErr) return { success: false, error: cErr.message } as ActionResult;
 
-    // Snapshot de mb_area a activos_aft
     const { data: mbs } = await admin
       .from("mb_area")
       .select("mb, descripcion")
@@ -293,7 +264,6 @@ export async function createControl(formData: FormData) {
         .insert(activos);
 
       if (aErr) {
-        // Rollback: eliminar el control creado
         await admin.from("controles_aft").delete().eq("id", control.id);
         return { success: false, error: "Error creando esperados: " + aErr.message } as ActionResult;
       }
@@ -308,7 +278,7 @@ export async function createControl(formData: FormData) {
 
 export async function completeControl(controlId: string) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
@@ -332,7 +302,7 @@ export async function completeControl(controlId: string) {
 
 export async function cancelControl(controlId: string) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
@@ -352,7 +322,7 @@ export async function cancelControl(controlId: string) {
 
 export async function deleteControl(controlId: string) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
@@ -372,7 +342,7 @@ export async function deleteControl(controlId: string) {
 }
 
 // ============================================================================
-// CONCILIACIÓN
+// CONCILIACIÓN (lectura: cualquier autenticado)
 // ============================================================================
 
 export type ReconciliationResult = {
@@ -400,7 +370,6 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
     await requireAuth();
     const admin = getAdminClient();
 
-    // 1. Obtener el control
     const { data: control, error: cErr } = await admin
       .from("controles_aft")
       .select("id, area_id, fecha_planificada, fecha_realizada, estado, areas_aft(codigo, nombre)")
@@ -411,7 +380,6 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
       return { success: false, error: cErr?.message || "Control no encontrado" };
     }
 
-    // 2. Obtener todos los activos_aft (esperados + estado de escaneo)
     const { data: activos, error: aErr } = await admin
       .from("activos_aft")
       .select("mb, descripcion, escaneado, fecha_escaneo")
@@ -444,7 +412,7 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
         expected: expected.length,
         scanned: escaneados.length,
         missing: faltantes,
-        surplus: [], // Por ahora vacío: la app móvil no puede escanear MBs no esperados
+        surplus: [],
         accuracy,
       },
     };
@@ -454,12 +422,12 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
 }
 
 // ============================================================================
-// SINCRONIZACIÓN DESDE APP MÓVIL
+// SINCRONIZACIÓN DESDE APP MÓVIL (cualquier autenticado)
 // ============================================================================
 
 export async function syncScans(data: {
   control_id: string;
-  scans: string[]; // Array de MBs escaneados
+  scans: string[];
 }) {
   try {
     const { user } = await requireAuth();
@@ -469,10 +437,8 @@ export async function syncScans(data: {
       return { success: true, data: { synced: 0 } } as ActionResult;
     }
 
-    // Normalizar MBs
     const mbs = data.scans.map(m => m.trim().toUpperCase());
 
-    // Actualizar activos_aft donde mb IN mbs
     const { error, count } = await admin
       .from("activos_aft")
       .update({
@@ -496,7 +462,6 @@ export async function syncScans(data: {
 // MANTENER ACCIONES DEL MODELO ANTERIOR (para no romper imports)
 // ============================================================================
 
-// (evitar runtime export del tipo; solo se usa como type local)
 export async function createActivo() { return { success: false, error: "Deprecated" }; }
 export async function updateActivo() { return { success: false, error: "Deprecated" }; }
 export async function deleteActivo() { return { success: false, error: "Deprecated" }; }

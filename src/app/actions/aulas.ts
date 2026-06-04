@@ -1,13 +1,12 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
-import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import {
   iniciarSessionSchema,
   guardarRevisionLocalSchema,
   eliminarSessionSchema,
 } from "@/lib/schemas/aulas";
+import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
 
 type ActionResult<T = unknown> = {
   success: boolean;
@@ -15,18 +14,16 @@ type ActionResult<T = unknown> = {
   error?: string;
 };
 
-async function requireAuth() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("No autenticado");
-  return { supabase, user };
-}
+// ============================================================================
+// LECTURA (cualquier autenticado)
+// ============================================================================
 
 export async function obtenerLocalesConMedios() {
   try {
-    const { supabase } = await requireAuth();
+    await requireAuth();
+    const admin = getAdminClient();
 
-    const { data: locales, error: lErr } = await supabase
+    const { data: locales, error: lErr } = await admin
       .from("locales")
       .select("id, codigo, nombre, tipo, estado, observaciones")
       .is("deleted_at", null)
@@ -35,7 +32,7 @@ export async function obtenerLocalesConMedios() {
     if (lErr) return { success: false, error: lErr.message } as ActionResult;
     if (!locales) return { success: true, data: [] } as ActionResult;
 
-    const { data: medios, error: mErr } = await supabase
+    const { data: medios, error: mErr } = await admin
       .from("medios")
       .select("id, codigo, nombre, locale_id, tipo_medio_id, estado, marca, modelo")
       .is("deleted_at", null);
@@ -59,125 +56,12 @@ export async function obtenerLocalesConMedios() {
   }
 }
 
-export async function iniciarSession(formData: FormData) {
-  try {
-    const { supabase, user } = await requireAuth();
-
-    const raw = {
-      revisor: formData.get("revisor") as string,
-      fecha_visita: formData.get("fecha_visita") as string,
-    };
-
-    const parsed = iniciarSessionSchema.safeParse(raw);
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: parsed.error.issues.map((i) => i.message).join(". "),
-      } as ActionResult;
-    }
-
-    const { data: locales, error: lErr } = await supabase
-      .from("locales")
-      .select("id, codigo, estado")
-      .is("deleted_at", null)
-      .neq("estado", "inactivo");
-
-    if (lErr) return { success: false, error: lErr.message } as ActionResult;
-
-    const sessionId = crypto.randomUUID();
-
-    const visitas = locales.map((l) => ({
-      organization_id: "00000000-0000-0000-0000-000000000001",
-      session_id: sessionId,
-      locale_id: l.id,
-      fecha_visita: parsed.data.fecha_visita,
-      revisor: parsed.data.revisor,
-      estado_general: null,
-      user_id: user.id,
-    }));
-
-    const { error: vErr } = await supabase.from("visitas_aulas").insert(visitas);
-    if (vErr) return { success: false, error: vErr.message } as ActionResult;
-
-    revalidatePath("/aulas");
-    return { success: true, data: { session_id: sessionId } } as ActionResult;
-  } catch (e) {
-    return { success: false, error: (e as Error).message } as ActionResult;
-  }
-}
-
-export async function guardarRevisionLocal(formData: FormData) {
-  try {
-    const { supabase, user } = await requireAuth();
-
-    const rawDetalles: Array<{ medio_id: string; estado: string; observaciones: string }> = [];
-    let i = 0;
-    while (formData.has(`detalles[${i}][medio_id]`)) {
-      rawDetalles.push({
-        medio_id: formData.get(`detalles[${i}][medio_id]`) as string,
-        estado: formData.get(`detalles[${i}][estado]`) as string,
-        observaciones: (formData.get(`detalles[${i}][observaciones]`) as string) || "",
-      });
-      i++;
-    }
-
-    const raw = {
-      visita_id: formData.get("visita_id") as string,
-      estado_general: formData.get("estado_general") as string,
-      observaciones_generales: (formData.get("observaciones_generales") as string) || "",
-      detalles: rawDetalles,
-    };
-
-    const parsed = guardarRevisionLocalSchema.safeParse(raw);
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: parsed.error.issues.map((i) => i.message).join(". "),
-      } as ActionResult;
-    }
-
-    // Actualizar visita_aula
-    const { error: vErr } = await supabase
-      .from("visitas_aulas")
-      .update({
-        estado_general: parsed.data.estado_general,
-        observaciones_generales: parsed.data.observaciones_generales,
-      })
-      .eq("id", parsed.data.visita_id)
-      .eq("user_id", user.id);
-
-    if (vErr) return { success: false, error: vErr.message } as ActionResult;
-
-    // Upsert detalles_visita
-    for (const detalle of parsed.data.detalles) {
-      const { error: dErr } = await supabase.from("detalles_visita").upsert(
-        {
-          visita_id: parsed.data.visita_id,
-          medio_id: detalle.medio_id,
-          estado: detalle.estado,
-          observaciones: detalle.observaciones || null,
-          user_id: user.id,
-        },
-        {
-          onConflict: "visita_id, medio_id",
-          ignoreDuplicates: false,
-        }
-      );
-      if (dErr) return { success: false, error: dErr.message } as ActionResult;
-    }
-
-    revalidatePath("/aulas");
-    return { success: true } as ActionResult;
-  } catch (e) {
-    return { success: false, error: (e as Error).message } as ActionResult;
-  }
-}
-
 export async function obtenerSesiones() {
   try {
-    const { supabase } = await requireAuth();
+    await requireAuth();
+    const admin = getAdminClient();
 
-    const { data, error } = await supabase
+    const { data, error } = await admin
       .from("visitas_aulas")
       .select(`
         session_id,
@@ -194,7 +78,6 @@ export async function obtenerSesiones() {
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
-    // Agrupar por session_id
     const sesiones: Record<string, {
       session_id: string;
       revisor: string;
@@ -238,9 +121,10 @@ export async function obtenerSesiones() {
 
 export async function obtenerSession(sessionId: string) {
   try {
-    const { supabase } = await requireAuth();
+    await requireAuth();
+    const admin = getAdminClient();
 
-    const { data: visitas, error: vErr } = await supabase
+    const { data: visitas, error: vErr } = await admin
       .from("visitas_aulas")
       .select(`
         id, session_id, locale_id, fecha_visita, revisor,
@@ -258,7 +142,7 @@ export async function obtenerSession(sessionId: string) {
 
     const visitaIds = visitas.map((v) => v.id);
 
-    const { data: detalles, error: dErr } = await supabase
+    const { data: detalles, error: dErr } = await admin
       .from("detalles_visita")
       .select(`
         id, visita_id, medio_id, estado, observaciones,
@@ -286,9 +170,128 @@ export async function obtenerSession(sessionId: string) {
   }
 }
 
+// ============================================================================
+// ESCRITURA (admin, jefe, especialista_hardware)
+// ============================================================================
+
+export async function iniciarSession(formData: FormData) {
+  try {
+    const { user } = await requireRole(ROLES.AULAS_ADMIN);
+    const admin = getAdminClient();
+
+    const raw = {
+      revisor: formData.get("revisor") as string,
+      fecha_visita: formData.get("fecha_visita") as string,
+    };
+
+    const parsed = iniciarSessionSchema.safeParse(raw);
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: parsed.error.issues.map((i) => i.message).join(". "),
+      } as ActionResult;
+    }
+
+    const { data: locales, error: lErr } = await admin
+      .from("locales")
+      .select("id, codigo, estado")
+      .is("deleted_at", null)
+      .neq("estado", "inactivo");
+
+    if (lErr) return { success: false, error: lErr.message } as ActionResult;
+
+    const sessionId = crypto.randomUUID();
+
+    const visitas = locales.map((l) => ({
+      organization_id: "00000000-0000-0000-0000-000000000001",
+      session_id: sessionId,
+      locale_id: l.id,
+      fecha_visita: parsed.data.fecha_visita,
+      revisor: parsed.data.revisor,
+      estado_general: null,
+      user_id: user.id,
+    }));
+
+    const { error: vErr } = await admin.from("visitas_aulas").insert(visitas);
+    if (vErr) return { success: false, error: vErr.message } as ActionResult;
+
+    revalidatePath("/aulas");
+    return { success: true, data: { session_id: sessionId } } as ActionResult;
+  } catch (e) {
+    return { success: false, error: (e as Error).message } as ActionResult;
+  }
+}
+
+export async function guardarRevisionLocal(formData: FormData) {
+  try {
+    const { user } = await requireRole(ROLES.AULAS_ADMIN);
+    const admin = getAdminClient();
+
+    const rawDetalles: Array<{ medio_id: string; estado: string; observaciones: string }> = [];
+    let i = 0;
+    while (formData.has(`detalles[${i}][medio_id]`)) {
+      rawDetalles.push({
+        medio_id: formData.get(`detalles[${i}][medio_id]`) as string,
+        estado: formData.get(`detalles[${i}][estado]`) as string,
+        observaciones: (formData.get(`detalles[${i}][observaciones]`) as string) || "",
+      });
+      i++;
+    }
+
+    const raw = {
+      visita_id: formData.get("visita_id") as string,
+      estado_general: formData.get("estado_general") as string,
+      observaciones_generales: (formData.get("observaciones_generales") as string) || "",
+      detalles: rawDetalles,
+    };
+
+    const parsed = guardarRevisionLocalSchema.safeParse(raw);
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: parsed.error.issues.map((i) => i.message).join(". "),
+      } as ActionResult;
+    }
+
+    const { error: vErr } = await admin
+      .from("visitas_aulas")
+      .update({
+        estado_general: parsed.data.estado_general,
+        observaciones_generales: parsed.data.observaciones_generales,
+      })
+      .eq("id", parsed.data.visita_id)
+      .eq("user_id", user.id);
+
+    if (vErr) return { success: false, error: vErr.message } as ActionResult;
+
+    for (const detalle of parsed.data.detalles) {
+      const { error: dErr } = await admin.from("detalles_visita").upsert(
+        {
+          visita_id: parsed.data.visita_id,
+          medio_id: detalle.medio_id,
+          estado: detalle.estado,
+          observaciones: detalle.observaciones || null,
+          user_id: user.id,
+        },
+        {
+          onConflict: "visita_id, medio_id",
+          ignoreDuplicates: false,
+        }
+      );
+      if (dErr) return { success: false, error: dErr.message } as ActionResult;
+    }
+
+    revalidatePath("/aulas");
+    return { success: true } as ActionResult;
+  } catch (e) {
+    return { success: false, error: (e as Error).message } as ActionResult;
+  }
+}
+
 export async function eliminarSession(formData: FormData) {
   try {
-    const { supabase } = await requireAuth();
+    await requireRole(ROLES.AULAS_ADMIN);
+    const admin = getAdminClient();
 
     const raw = { session_id: formData.get("session_id") as string };
     const parsed = eliminarSessionSchema.safeParse(raw);
@@ -296,8 +299,7 @@ export async function eliminarSession(formData: FormData) {
       return { success: false, error: "ID de sesión inválido" } as ActionResult;
     }
 
-    // Soft delete todas las visitas de la sesión
-    const { error } = await supabase
+    const { error } = await admin
       .from("visitas_aulas")
       .update({ deleted_at: new Date().toISOString() })
       .eq("session_id", parsed.data.session_id);
@@ -311,17 +313,9 @@ export async function eliminarSession(formData: FormData) {
   }
 }
 
-function getAdminClient() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-  );
-}
-
 export async function toggleBloqueoLocal(localeId: string) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AULAS_ADMIN);
     const admin = getAdminClient();
 
     const { data: locale, error: lErr } = await admin
@@ -350,7 +344,7 @@ export async function toggleBloqueoLocal(localeId: string) {
 
 export async function crearLocal(formData: FormData) {
   try {
-    const { user } = await requireAuth();
+    const { user } = await requireRole(ROLES.AULAS_ADMIN);
     const admin = getAdminClient();
 
     const { data: profile } = await admin
@@ -398,7 +392,7 @@ export async function crearLocal(formData: FormData) {
 
 export async function eliminarLocal(formData: FormData) {
   try {
-    await requireAuth();
+    await requireRole(ROLES.AULAS_ADMIN);
     const admin = getAdminClient();
 
     const localeId = formData.get("locale_id") as string;
