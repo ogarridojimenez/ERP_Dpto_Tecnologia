@@ -9,6 +9,9 @@
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "echo \"No tests yet\" && exit 0",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
     "db:pull": "npx prisma db pull",
     "db:generate": "npx prisma generate",
     "db:push": "npx prisma db push"
@@ -36,6 +39,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.20.0",
