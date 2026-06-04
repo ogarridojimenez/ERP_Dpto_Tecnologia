@@ -1,0 +1,33 @@
+# OSX
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.expo/
+.expo-shared/
+
+# Native folders
+ios/Pods/
+ios/build/
+android/.gradle/
+android/build/
+android/app/build/
+android/.idea/
+android/local.properties
+*.keystore
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro
+.metro-health-check*
+
+# Misc
+*.tsbuildinfo
+*.log
+.env*.local

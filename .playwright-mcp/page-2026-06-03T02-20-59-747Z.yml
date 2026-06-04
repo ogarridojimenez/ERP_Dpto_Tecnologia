@@ -1,0 +1,169 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e24] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e25] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e26] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e27] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - link "← Volver al Dashboard" [ref=e30] [cursor=pointer]:
+            - /url: /aft
+          - generic [ref=e32]:
+            - heading "E2E-001 - Area de Prueba E2E" [level=1] [ref=e33]
+            - paragraph [ref=e34]: "Planificado: 2 de junio de 2026 · Realizado: 2 de junio de 2026 · COMPLETADO"
+        - generic [ref=e38]:
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - paragraph [ref=e42]: Esperados
+              - paragraph [ref=e43]: "20"
+            - generic [ref=e44]: 📦
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - paragraph [ref=e48]: Escaneados
+              - paragraph [ref=e49]: "5"
+            - generic [ref=e50]: ✅
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - paragraph [ref=e54]: Faltantes
+              - paragraph [ref=e55]: "15"
+            - generic [ref=e56]: ❌
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - paragraph [ref=e60]: Precisión
+              - paragraph [ref=e61]: 25%
+            - generic [ref=e62]: 🎯
+        - generic [ref=e64]:
+          - heading "Progreso del Control" [level=2] [ref=e65]
+          - generic [ref=e66]: 5 de 20
+        - generic [ref=e69]:
+          - heading "❌ Activos Faltantes (15)" [level=2] [ref=e70]
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - generic [ref=e73]: MB000077006
+              - generic [ref=e74]: Impresora HP LaserJet 1020
+            - generic [ref=e75]:
+              - generic [ref=e76]: MB000077007
+              - generic [ref=e77]: Switch TP-Link 8 puertos
+            - generic [ref=e78]:
+              - generic [ref=e79]: MB000077008
+              - generic [ref=e80]: UPS APC Back-UPS 600VA
+            - generic [ref=e81]:
+              - generic [ref=e82]: MB000077009
+              - generic [ref=e83]: Escaner Epson Perfection V19
+            - generic [ref=e84]:
+              - generic [ref=e85]: MB000077010
+              - generic [ref=e86]: Laptop HP ProBook 440 G7
+            - generic [ref=e87]:
+              - generic [ref=e88]: MB000077011
+              - generic [ref=e89]: Router MikroTik hAP ac2
+            - generic [ref=e90]:
+              - generic [ref=e91]: MB000077012
+              - generic [ref=e92]: Access Point TP-Link EAP245
+            - generic [ref=e93]:
+              - generic [ref=e94]: MB000077013
+              - generic [ref=e95]: Servidor Dell PowerEdge T40
+            - generic [ref=e96]:
+              - generic [ref=e97]: MB000077014
+              - generic [ref=e98]: Disco Duro Externo Seagate 2TB
+            - generic [ref=e99]:
+              - generic [ref=e100]: MB000077015
+              - generic [ref=e101]: Memoria USB Kingston 32GB
+            - generic [ref=e102]:
+              - generic [ref=e103]: MB000077016
+              - generic [ref=e104]: Camara Web Logitech C920
+            - generic [ref=e105]:
+              - generic [ref=e106]: MB000077017
+              - generic [ref=e107]: Audifonos HyperX Cloud II
+            - generic [ref=e108]:
+              - generic [ref=e109]: MB000077018
+              - generic [ref=e110]: Microfono Blue Yeti
+            - generic [ref=e111]:
+              - generic [ref=e112]: MB000077019
+              - generic [ref=e113]: Tablet Samsung Galaxy Tab A8
+            - generic [ref=e114]:
+              - generic [ref=e115]: MB000077020
+              - generic [ref=e116]: Proyector Epson PowerLite X41
+        - generic [ref=e117]:
+          - generic [ref=e118]:
+            - heading "✅ Escaneados (5)" [level=3] [ref=e120]
+            - list [ref=e122]:
+              - listitem [ref=e123]:
+                - generic [ref=e124]: MB000077001
+                - generic [ref=e125]: PC HP Compaq 6005 - Lab 1
+              - listitem [ref=e126]:
+                - generic [ref=e127]: MB000077002
+                - generic [ref=e128]: Monitor Dell 19" - Lab 1
+              - listitem [ref=e129]:
+                - generic [ref=e130]: MB000077003
+                - generic [ref=e131]: PC Lenovo ThinkCentre - Lab 1
+              - listitem [ref=e132]:
+                - generic [ref=e133]: MB000077004
+                - generic [ref=e134]: Teclado Logitech K120
+              - listitem [ref=e135]:
+                - generic [ref=e136]: MB000077005
+                - generic [ref=e137]: Mouse Genius DX-110
+          - generic [ref=e138]:
+            - heading "⏳ Pendientes (15)" [level=3] [ref=e140]
+            - list [ref=e142]:
+              - listitem [ref=e143]:
+                - generic [ref=e144]: MB000077006
+                - generic [ref=e145]: Impresora HP LaserJet 1020
+              - listitem [ref=e146]:
+                - generic [ref=e147]: MB000077007
+                - generic [ref=e148]: Switch TP-Link 8 puertos
+              - listitem [ref=e149]:
+                - generic [ref=e150]: MB000077008
+                - generic [ref=e151]: UPS APC Back-UPS 600VA
+              - listitem [ref=e152]:
+                - generic [ref=e153]: MB000077009
+                - generic [ref=e154]: Escaner Epson Perfection V19
+              - listitem [ref=e155]:
+                - generic [ref=e156]: MB000077010
+                - generic [ref=e157]: Laptop HP ProBook 440 G7
+              - listitem [ref=e158]:
+                - generic [ref=e159]: MB000077011
+                - generic [ref=e160]: Router MikroTik hAP ac2
+              - listitem [ref=e161]:
+                - generic [ref=e162]: MB000077012
+                - generic [ref=e163]: Access Point TP-Link EAP245
+              - listitem [ref=e164]:
+                - generic [ref=e165]: MB000077013
+                - generic [ref=e166]: Servidor Dell PowerEdge T40
+              - listitem [ref=e167]:
+                - generic [ref=e168]: MB000077014
+                - generic [ref=e169]: Disco Duro Externo Seagate 2TB
+              - listitem [ref=e170]:
+                - generic [ref=e171]: MB000077015
+                - generic [ref=e172]: Memoria USB Kingston 32GB
+              - listitem [ref=e173]:
+                - generic [ref=e174]: MB000077016
+                - generic [ref=e175]: Camara Web Logitech C920
+              - listitem [ref=e176]:
+                - generic [ref=e177]: MB000077017
+                - generic [ref=e178]: Audifonos HyperX Cloud II
+              - listitem [ref=e179]:
+                - generic [ref=e180]: MB000077018
+                - generic [ref=e181]: Microfono Blue Yeti
+              - listitem [ref=e182]:
+                - generic [ref=e183]: MB000077019
+                - generic [ref=e184]: Tablet Samsung Galaxy Tab A8
+              - listitem [ref=e185]:
+                - generic [ref=e186]: MB000077020
+                - generic [ref=e187]: Proyector Epson PowerLite X41
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e22]

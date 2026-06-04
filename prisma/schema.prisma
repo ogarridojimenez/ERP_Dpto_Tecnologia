@@ -1,0 +1,521 @@
+// ============================================================================
+// SITRADE — Prisma Schema
+// Generado desde el esquema SQL de Supabase.
+// Para sincronizar: npx prisma db pull
+// Para generar cliente: npx prisma generate
+// ============================================================================
+// IMPORTANTE — RLS y Prisma:
+// Prisma se conecta con el service_role key de Supabase, lo que BYPASEA RLS.
+// Por eso las políticas RLS están en SQL para el cliente Supabase JS,
+// y aquí en Prisma controlamos permisos por código (user_role checks).
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Service role key connection string
+}
+
+// ============================================================================
+// 1. ORGANIZACIONES (multi-tenancy futuro)
+// ============================================================================
+model Organization {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String   @db.Text
+  slug      String   @unique @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz
+
+  profiles      Profile[]
+  locales       Locale[]
+  tiposMedio    TipoMedio[]
+  medios        Medio[]
+  visitasAulas  VisitaAula[]
+  guardias      Guardia[]
+  incidencias   Incidencia[]
+  cargos        Cargo[]
+  trabajadores  Trabajador[]
+  hojasFirma    HojaFirma[]
+  prenominas    Prenomina[]
+  activos       Activo[]
+  controlesAft  ControlAft[]
+
+  @@map("organizations")
+}
+
+// ============================================================================
+// 2. PERFILES (extiende auth.users)
+// ============================================================================
+model Profile {
+  id             String      @id @db.Uuid
+  organizationId String?     @map("organization_id") @db.Uuid
+  nombreCompleto String      @map("nombre_completo") @db.Text
+  role           String      @default("tecnico") @db.Text
+  telefono       String?     @db.Text
+  activo         Boolean     @default(true)
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime    @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt      DateTime?   @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+
+  @@map("profiles")
+}
+
+// ============================================================================
+// 3. LOCALES
+// ============================================================================
+model Locale {
+  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String?               @map("organization_id") @db.Uuid
+  codigo          String                @unique @db.Text
+  nombre          String                @db.Text
+  tipo            String                @db.Text
+  edificio        String?               @db.Text
+  piso            Int?                  @db.Integer
+  capacidad       Int?                  @db.Integer
+  estado          String                @default("activo") @db.Text
+  observaciones   String?               @db.Text
+  userId          String                @map("user_id") @db.Uuid
+  createdAt       DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime              @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime?             @map("deleted_at") @db.Timestamptz
+
+  organization         Organization?          @relation(fields: [organizationId], references: [id])
+  medios               Medio[]
+  visitasAulas         VisitaAula[]
+  observacionesGuardia ObservacionGuardia[]
+  incidencias          Incidencia[]
+  activos              Activo[]
+  movimientosOrigen    MovimientoActivo[]      @relation("movimiento_origen")
+  movimientosDestino   MovimientoActivo[]      @relation("movimiento_destino")
+  controlesAft         ControlAft[]
+
+  @@map("locales")
+}
+
+// ============================================================================
+// 4. TIPOS DE MEDIO
+// ============================================================================
+model TipoMedio {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String?  @map("organization_id") @db.Uuid
+  nombre          String   @unique @db.Text
+  categoria       String   @db.Text
+  icono           String?  @db.Text
+  userId          String   @map("user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  medios       Medio[]
+
+  @@map("tipos_medio")
+}
+
+// ============================================================================
+// 5. MEDIOS
+// ============================================================================
+model Medio {
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId    String?         @map("organization_id") @db.Uuid
+  localeId          String          @map("locale_id") @db.Uuid
+  tipoMedioId       String          @map("tipo_medio_id") @db.Uuid
+  numeroMedioBasico String          @unique @map("numero_medio_basico") @db.Text
+  marca             String?         @db.Text
+  modelo            String?         @db.Text
+  numeroSerie       String?         @map("numero_serie") @db.Text
+  estado            String          @default("bueno") @db.Text
+  fechaAdquisicion  DateTime?       @map("fecha_adquisicion") @db.Date
+  observaciones     String?         @db.Text
+  userId            String          @map("user_id") @db.Uuid
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime        @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?       @map("deleted_at") @db.Timestamptz
+
+  organization    Organization?     @relation(fields: [organizationId], references: [id])
+  locale          Locale            @relation(fields: [localeId], references: [id])
+  tipoMedio       TipoMedio         @relation(fields: [tipoMedioId], references: [id])
+  detallesVisita  DetalleVisita[]
+  incidencias     Incidencia[]
+
+  @@map("medios")
+}
+
+// ============================================================================
+// 6. VISITAS A AULAS
+// ============================================================================
+model VisitaAula {
+  id                   String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId       String?          @map("organization_id") @db.Uuid
+  sessionId            String?          @map("session_id") @db.Uuid
+  localeId             String           @map("locale_id") @db.Uuid
+  fechaVisita          DateTime         @default(now()) @map("fecha_visita") @db.Date
+  revisor              String           @default("") @db.Text
+  estadoGeneral        String?          @map("estado_general") @db.Text
+  observacionesGenerales String?         @map("observaciones_generales") @db.Text
+  userId               String           @map("user_id") @db.Uuid
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime         @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt            DateTime?        @map("deleted_at") @db.Timestamptz
+
+  organization Organization?   @relation(fields: [organizationId], references: [id])
+  locale       Locale          @relation(fields: [localeId], references: [id])
+  detalles     DetalleVisita[]
+  incidencias  Incidencia[]
+
+  @@map("visitas_aulas")
+}
+
+// ============================================================================
+// 7. DETALLES DE VISITA
+// ============================================================================
+model DetalleVisita {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  visitaId      String   @map("visita_id") @db.Uuid
+  medioId       String   @map("medio_id") @db.Uuid
+  estado        String   @db.Text
+  observaciones String?  @db.Text
+  userId        String   @map("user_id") @db.Uuid
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt     DateTime? @map("deleted_at") @db.Timestamptz
+
+  visita      VisitaAula @relation(fields: [visitaId], references: [id], onDelete: Cascade)
+  medio       Medio      @relation(fields: [medioId], references: [id])
+
+  @@unique([visitaId, medioId])
+  @@map("detalles_visita")
+}
+
+// ============================================================================
+// 8. GUARDIAS
+// ============================================================================
+model Guardia {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId       String?                @map("organization_id") @db.Uuid
+  fecha                DateTime               @default(now()) @db.Date
+  turno                String                 @db.Text
+  entregadoPor         String?                @map("entregado_por") @db.Uuid
+  recibidoPor          String?                @map("recibido_por") @db.Uuid
+  estado               String                 @default("pendiente_entrega") @db.Text
+  observacionesGenerales String?               @map("observaciones_generales") @db.Text
+  userId               String                 @map("user_id") @db.Uuid
+  createdAt            DateTime               @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt            DateTime               @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt            DateTime?              @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  observaciones ObservacionGuardia[]
+  incidencias   Incidencia[]
+
+  @@map("guardias")
+}
+
+// ============================================================================
+// 9. OBSERVACIONES DE GUARDIA
+// ============================================================================
+model ObservacionGuardia {
+  id                       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  guardiaId                String   @map("guardia_id") @db.Uuid
+  localeId                 String   @map("locale_id") @db.Uuid
+  tipo                     String   @db.Text
+  pcEncendidas             Int?     @default(0) @map("pc_encendidas") @db.Integer
+  pcEstado                 String?  @map("pc_estado") @db.Text
+  pcObservaciones          String?  @map("pc_observaciones") @db.Text
+  perifericosEstado        String?  @map("perifericos_estado") @db.Text
+  perifericosObservaciones String?  @map("perifericos_observaciones") @db.Text
+  cablesRedConteo          Int?     @default(0) @map("cables_red_conteo") @db.Integer
+  cablesRedEstado          String?  @map("cables_red_estado") @db.Text
+  cablesCorrienteConteo    Int?     @default(0) @map("cables_corriente_conteo") @db.Integer
+  cablesCorrienteEstado    String?  @map("cables_corriente_estado") @db.Text
+  estadoGeneral            String   @map("estado_general") @db.Text
+  observaciones            String?  @db.Text
+  userId                   String   @map("user_id") @db.Uuid
+  createdAt                DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt                DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt                DateTime? @map("deleted_at") @db.Timestamptz
+
+  guardia Guardia @relation(fields: [guardiaId], references: [id], onDelete: Cascade)
+  locale  Locale  @relation(fields: [localeId], references: [id])
+
+  @@unique([guardiaId, localeId, tipo])
+  @@map("observaciones_guardia")
+}
+
+// ============================================================================
+// 10. INCIDENCIAS
+// ============================================================================
+model Incidencia {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  guardiaId      String?  @map("guardia_id") @db.Uuid
+  visitaId       String?  @map("visita_id") @db.Uuid
+  localeId       String   @map("locale_id") @db.Uuid
+  medioId        String?  @map("medio_id") @db.Uuid
+  tipo           String   @db.Text
+  descripcion    String   @db.Text
+  urgente        Boolean  @default(false)
+  resuelta       Boolean  @default(false)
+  fechaSolucion  DateTime? @map("fecha_solucion") @db.Timestamptz
+  solucion       String?  @db.Text
+  userId         String   @map("user_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  locale       Locale        @relation(fields: [localeId], references: [id])
+  medio        Medio?        @relation(fields: [medioId], references: [id])
+  visita       VisitaAula?   @relation(fields: [visitaId], references: [id])
+  guardia      Guardia?      @relation(fields: [guardiaId], references: [id])
+
+  @@map("incidencias")
+}
+
+// ============================================================================
+// 11. CARGOS
+// ============================================================================
+model Cargo {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String?        @map("organization_id") @db.Uuid
+  nombre          String         @unique @db.Text
+  descripcion     String?        @db.Text
+  nivel           Int?           @default(0) @db.Integer
+  userId          String         @map("user_id") @db.Uuid
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime?      @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  trabajadores Trabajador[]
+
+  @@map("cargos")
+}
+
+// ============================================================================
+// 12. TRABAJADORES
+// ============================================================================
+model Trabajador {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String?        @map("organization_id") @db.Uuid
+  userId         String?        @map("user_id") @db.Uuid
+  cargoId        String         @map("cargo_id") @db.Uuid
+  nombreCompleto String         @map("nombre_completo") @db.Text
+  ci             String         @unique @db.Text
+  telefono       String?        @db.Text
+  direccion      String?        @db.Text
+  fechaIngreso   DateTime       @map("fecha_ingreso") @db.Date
+  activo         Boolean        @default(true)
+  observaciones  String?        @db.Text
+  createdBy      String         @map("created_by") @db.Uuid
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime       @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt      DateTime?      @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  cargo        Cargo          @relation(fields: [cargoId], references: [id])
+  horarios     Horario[]
+  hojasFirma   HojaFirma[]
+  prenominas   Prenomina[]
+
+  @@map("trabajadores")
+}
+
+// ============================================================================
+// 13. HORARIOS
+// ============================================================================
+model Horario {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trabajadorId String   @map("trabajador_id") @db.Uuid
+  diaSemana    Int      @map("dia_semana") @db.Integer
+  horaEntrada  String   @map("hora_entrada") @db.Text // time almacenado como texto
+  horaSalida   String   @map("hora_salida") @db.Text
+  activo       Boolean  @default(true)
+  userId       String   @map("user_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt    DateTime? @map("deleted_at") @db.Timestamptz
+
+  trabajador Trabajador @relation(fields: [trabajadorId], references: [id], onDelete: Cascade)
+
+  @@unique([trabajadorId, diaSemana])
+  @@map("horarios")
+}
+
+// ============================================================================
+// 14. HOJAS DE FIRMA
+// ============================================================================
+model HojaFirma {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId  String?         @map("organization_id") @db.Uuid
+  trabajadorId    String          @map("trabajador_id") @db.Uuid
+  mes             Int             @db.Integer
+  anio            Int             @db.Integer
+  generadaPor     String?         @map("generada_por") @db.Uuid
+  fechaGeneracion DateTime        @default(now()) @map("fecha_generacion") @db.Date
+  userId          String          @map("user_id") @db.Uuid
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime        @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  trabajador   Trabajador    @relation(fields: [trabajadorId], references: [id], onDelete: Cascade)
+  detalles     DetalleHojaFirma[]
+
+  @@unique([trabajadorId, mes, anio])
+  @@map("hojas_firma")
+}
+
+// ============================================================================
+// 15. DETALLES HOJA DE FIRMA
+// ============================================================================
+model DetalleHojaFirma {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  hojaFirmaId String   @map("hoja_firma_id") @db.Uuid
+  dia         Int      @db.Integer
+  horaEntrada String?  @map("hora_entrada") @db.Text
+  horaSalida  String?  @map("hora_salida") @db.Text
+  firma       String?  @db.Text
+  observaciones String? @db.Text
+  userId      String   @map("user_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
+
+  hojaFirma HojaFirma @relation(fields: [hojaFirmaId], references: [id], onDelete: Cascade)
+
+  @@unique([hojaFirmaId, dia])
+  @@map("detalles_hoja_firma")
+}
+
+// ============================================================================
+// 16. PRENÓMINAS
+// ============================================================================
+model Prenomina {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId String?  @map("organization_id") @db.Uuid
+  trabajadorId   String   @map("trabajador_id") @db.Uuid
+  mes            Int      @db.Integer
+  anio           Int      @db.Integer
+  diasTrabajados Int      @map("dias_trabajados") @db.Integer
+  valorDia       Decimal  @map("valor_dia") @db.Decimal(10, 2)
+  totalDevengado Decimal  @map("total_devengado") @db.Decimal(10, 2)
+  otrosPagos     Decimal  @default(0) @map("otros_pagos") @db.Decimal(10, 2)
+  total          Decimal  @map("total") @db.Decimal(10, 2)
+  observaciones  String?  @db.Text
+  generadaPor    String?  @map("generada_por") @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  trabajador   Trabajador    @relation(fields: [trabajadorId], references: [id], onDelete: Cascade)
+
+  @@unique([trabajadorId, mes, anio])
+  @@map("prenominas")
+}
+
+// ============================================================================
+// 17. ACTIVOS FIJOS TANGIBLES
+// ============================================================================
+model Activo {
+  id                String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId    String?             @map("organization_id") @db.Uuid
+  localeId          String              @map("locale_id") @db.Uuid
+  tipo              String              @db.Text
+  numeroMedioBasico String              @unique @map("numero_medio_basico") @db.Text
+  marca             String?             @db.Text
+  modelo            String?             @db.Text
+  numeroSerie       String?             @map("numero_serie") @db.Text
+  estado            String              @default("bueno") @db.Text
+  fechaAdquisicion  DateTime?           @map("fecha_adquisicion") @db.Date
+  ultimoControlDate DateTime?           @map("ultimo_control_date") @db.Date
+  tieneQr           Boolean             @default(false) @map("tiene_qr")
+  observaciones     String?             @db.Text
+  userId            String              @map("user_id") @db.Uuid
+  createdAt         DateTime            @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime            @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime?           @map("deleted_at") @db.Timestamptz
+
+  organization      Organization?       @relation(fields: [organizationId], references: [id])
+  locale            Locale              @relation(fields: [localeId], references: [id])
+  movimientos       MovimientoActivo[]
+  detallesControl   DetalleControl[]
+
+  @@map("activos")
+}
+
+// ============================================================================
+// 18. MOVIMIENTOS DE ACTIVOS
+// ============================================================================
+model MovimientoActivo {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  activoId        String   @map("activo_id") @db.Uuid
+  localeOrigenId  String   @map("locale_origen_id") @db.Uuid
+  localeDestinoId String   @map("locale_destino_id") @db.Uuid
+  fechaMovimiento DateTime @default(now()) @map("fecha_movimiento") @db.Date
+  motivo          String   @db.Text
+  observaciones   String?  @db.Text
+  userId          String   @map("user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+
+  activo        Activo @relation(fields: [activoId], references: [id], onDelete: Cascade)
+  localeOrigen  Locale @relation("movimiento_origen", fields: [localeOrigenId], references: [id])
+  localeDestino Locale @relation("movimiento_destino", fields: [localeDestinoId], references: [id])
+
+  @@map("movimientos_activos")
+}
+
+// ============================================================================
+// 19. CONTROLES AFT
+// ============================================================================
+model ControlAft {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organizationId   String?          @map("organization_id") @db.Uuid
+  localeId         String           @map("locale_id") @db.Uuid
+  fechaPlanificada DateTime         @map("fecha_planificada") @db.Date
+  fechaRealizada   DateTime?        @map("fecha_realizada") @db.Date
+  estado           String           @default("planificado") @db.Text
+  observaciones    String?          @db.Text
+  userId           String           @map("user_id") @db.Uuid
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime         @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt        DateTime?        @map("deleted_at") @db.Timestamptz
+
+  organization Organization? @relation(fields: [organizationId], references: [id])
+  locale       Locale         @relation(fields: [localeId], references: [id])
+  detalles     DetalleControl[]
+
+  @@map("controles_aft")
+}
+
+// ============================================================================
+// 20. DETALLES DE CONTROL AFT
+// ============================================================================
+model DetalleControl {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  controlId       String   @map("control_id") @db.Uuid
+  activoId        String   @map("activo_id") @db.Uuid
+  presente        Boolean  @default(true)
+  estadoObservado String?  @map("estado_observado") @db.Text
+  observaciones   String?  @db.Text
+  userId          String   @map("user_id") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz
+
+  control ControlAft @relation(fields: [controlId], references: [id], onDelete: Cascade)
+  activo  Activo     @relation(fields: [activoId], references: [id])
+
+  @@unique([controlId, activoId])
+  @@map("detalles_control")
+}

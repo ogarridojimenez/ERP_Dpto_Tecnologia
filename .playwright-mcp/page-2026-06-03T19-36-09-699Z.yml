@@ -1,0 +1,55 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [active] [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e467]:
+        - generic [ref=e469]:
+          - heading "Guardia - Partes Diarios" [level=1] [ref=e470]
+          - paragraph [ref=e471]: Control de entrega y recibo de perifericos por area
+          - generic [ref=e472]:
+            - link "Nuevo Parte" [ref=e473] [cursor=pointer]:
+              - /url: /guardia/nueva
+            - link "Configuracion" [ref=e474] [cursor=pointer]:
+              - /url: /guardia/config
+        - generic [ref=e477]:
+          - heading "Historial de Partes" [level=2] [ref=e479]
+          - generic [ref=e480]:
+            - generic [ref=e481]:
+              - 'link "📋 3 de junio de 2026 Creado: 3/6/2026" [ref=e482] [cursor=pointer]':
+                - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+                - generic [ref=e483]:
+                  - generic [ref=e484]: 📋
+                  - generic [ref=e485]:
+                    - paragraph [ref=e486]: 3 de junio de 2026
+                    - paragraph [ref=e487]: "Creado: 3/6/2026"
+              - generic [ref=e488]:
+                - generic [ref=e489]: Borrador
+                - button "Eliminar" [ref=e490]:
+                  - img [ref=e491]
+            - generic [ref=e493]:
+              - 'link "📋 2 de junio de 2026 Creado: 3/6/2026" [ref=e494] [cursor=pointer]':
+                - /url: /guardia/abf6b43b-3916-46b2-843b-5abe3ca74389
+                - generic [ref=e495]:
+                  - generic [ref=e496]: 📋
+                  - generic [ref=e497]:
+                    - paragraph [ref=e498]: 2 de junio de 2026
+                    - paragraph [ref=e499]: "Creado: 3/6/2026"
+              - generic [ref=e500]:
+                - generic [ref=e501]: Borrador
+                - button "Eliminar" [ref=e502]:
+                  - img [ref=e503]

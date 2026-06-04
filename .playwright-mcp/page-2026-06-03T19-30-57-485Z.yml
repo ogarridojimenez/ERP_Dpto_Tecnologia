@@ -1,0 +1,82 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e24] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e25] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e7]:
+        - generic [ref=e8]: tecnicoE@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e290]:
+        - link "← Volver al parte" [ref=e292] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e293]:
+          - generic [ref=e294]:
+            - heading "🔬 Laboratorio 208" [level=1] [ref=e295]
+            - paragraph [ref=e296]: LAB-208
+          - generic [ref=e297]:
+            - button "Entrega" [ref=e298]
+            - button "Recibo" [disabled] [ref=e299]
+          - generic [ref=e301]:
+            - generic [ref=e302]:
+              - generic [ref=e303]:
+                - generic [ref=e304]: Nombre (Entrega)
+                - textbox "Nombre completo" [ref=e305]
+              - generic [ref=e306]:
+                - generic [ref=e307]: Solapin (Entrega)
+                - textbox "Numero de solapin" [ref=e308]
+            - generic [ref=e309]:
+              - generic [ref=e310]: Perifericos - Cantidad Entregada
+              - generic [ref=e311]:
+                - generic [ref=e312]:
+                  - generic [ref=e313]: PC
+                  - spinbutton [ref=e314]
+                - generic [ref=e315]:
+                  - generic [ref=e316]: Monitores
+                  - spinbutton [ref=e317]
+                - generic [ref=e318]:
+                  - generic [ref=e319]: Teclados
+                  - spinbutton [ref=e320]
+                - generic [ref=e321]:
+                  - generic [ref=e322]: Mouse
+                  - spinbutton [ref=e323]
+                - generic [ref=e324]:
+                  - generic [ref=e325]: Sillas
+                  - spinbutton [ref=e326]
+                - generic [ref=e327]:
+                  - generic [ref=e328]: Mesas
+                  - spinbutton [ref=e329]
+                - generic [ref=e330]:
+                  - generic [ref=e331]: Switch
+                  - spinbutton [ref=e332]
+                - generic [ref=e333]:
+                  - generic [ref=e334]: Cables de Red
+                  - spinbutton [ref=e335]
+                - generic [ref=e336]:
+                  - generic [ref=e337]: C. Aliment.
+                  - spinbutton [ref=e338]
+                - generic [ref=e339]:
+                  - generic [ref=e340]: UPS
+                  - spinbutton [ref=e341]
+                - generic [ref=e342]:
+                  - generic [ref=e343]: Sellos-Cdados
+                  - spinbutton [ref=e344]
+            - generic [ref=e345]:
+              - generic [ref=e346]: Observaciones
+              - textbox [ref=e347]
+            - button "Guardar Entrega" [disabled] [ref=e348]
+  - button "Open Next.js Dev Tools" [ref=e349] [cursor=pointer]:
+    - generic [ref=e352]:
+      - text: Rendering
+      - generic [ref=e353]:
+        - generic [ref=e354]: .
+        - generic [ref=e355]: .
+        - generic [ref=e356]: .
+  - alert [ref=e22]

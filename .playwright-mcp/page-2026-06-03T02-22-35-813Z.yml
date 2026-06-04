@@ -1,0 +1,64 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e23] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e24] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e25] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e26] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - heading "Historial de Controles" [level=1] [ref=e30]
+            - paragraph [ref=e31]: Todos los controles realizados y en curso
+          - link "← Volver" [ref=e32] [cursor=pointer]:
+            - /url: /aft
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - textbox "🔍 Buscar por código o nombre de área..." [ref=e35]
+            - combobox [ref=e36]:
+              - option "Todos los estados"
+              - option "Planificado"
+              - option "En curso"
+              - option "Completado" [selected]
+              - option "Cancelado"
+            - combobox [ref=e37]:
+              - option "Todas las áreas" [selected]
+              - option "E2E-001"
+          - paragraph [ref=e38]: 1 de 1 controles
+        - table [ref=e40]:
+          - rowgroup [ref=e41]:
+            - row "Fecha Plan. Área MBs Estado Acción" [ref=e42]:
+              - columnheader "Fecha Plan." [ref=e43]
+              - columnheader "Área" [ref=e44]
+              - columnheader "MBs" [ref=e45]
+              - columnheader "Estado" [ref=e46]
+              - columnheader "Acción" [ref=e47]
+          - rowgroup [ref=e48]:
+            - 'row "2 de junio de 2026 Realizado: 2 de junio de 2026 E2E-001 Area de Prueba E2E 20 Completado Ver" [ref=e49]':
+              - 'cell "2 de junio de 2026 Realizado: 2 de junio de 2026" [ref=e50]':
+                - generic [ref=e51]: 2 de junio de 2026
+                - generic [ref=e52]: "Realizado: 2 de junio de 2026"
+              - cell "E2E-001 Area de Prueba E2E" [ref=e53]:
+                - generic [ref=e54]: E2E-001
+                - generic [ref=e55]: Area de Prueba E2E
+              - cell "20" [ref=e56]
+              - cell "Completado" [ref=e57]
+              - cell "Ver" [ref=e58]:
+                - link "Ver" [ref=e59] [cursor=pointer]:
+                  - /url: /aft/controles/91279196-a3cc-4555-9b2c-833578178136
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e60]

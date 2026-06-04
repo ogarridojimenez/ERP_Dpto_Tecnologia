@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e977] [cursor=pointer]:
+    - generic [ref=e980]:
+      - text: Rendering
+      - generic [ref=e981]:
+        - generic [ref=e982]: .
+        - generic [ref=e983]: .
+        - generic [ref=e984]: .
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e985]: Cargando...

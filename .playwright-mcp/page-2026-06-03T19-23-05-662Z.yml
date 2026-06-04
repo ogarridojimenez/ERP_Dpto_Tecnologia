@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]
+  - alert [ref=e33]
+  - generic [ref=e38]:
+    - generic [ref=e39]:
+      - heading "SITRADE" [level=1] [ref=e40]
+      - paragraph [ref=e41]: Sistema Integrado de Tecnología, Activos y Departamentos
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]: Correo electrónico
+        - textbox "Correo electrónico" [ref=e45]:
+          - /placeholder: usuario@uci.cu
+          - text: tecnico1@sitrade.uci.cu
+      - generic [ref=e46]:
+        - generic [ref=e47]: Contraseña
+        - textbox "Contraseña" [ref=e48]: Tecnico2026!
+      - button "Entrar" [ref=e49]

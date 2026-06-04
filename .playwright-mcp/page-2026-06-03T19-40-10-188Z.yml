@@ -1,0 +1,93 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e2351] [cursor=pointer]:
+    - generic [ref=e2354]:
+      - text: Rendering
+      - generic [ref=e2355]:
+        - generic [ref=e2356]: .
+        - generic [ref=e2357]: .
+        - generic [ref=e2358]: .
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e2359]:
+        - link "← Volver al parte" [ref=e2361] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e2362]:
+          - generic [ref=e2363]:
+            - heading "🔬 Laboratorio 208" [level=1] [ref=e2364]
+            - paragraph [ref=e2365]: LAB-208
+          - generic [ref=e2366]:
+            - button "Entrega ✓" [ref=e2367]
+            - button "Recibo" [ref=e2368]
+          - generic [ref=e2370]:
+            - generic [ref=e2371]:
+              - generic [ref=e2372]:
+                - generic [ref=e2373]: Nombre (Recibe)
+                - textbox "Nombre completo" [ref=e2374]
+              - generic [ref=e2375]:
+                - generic [ref=e2376]: Solapin (Recibe)
+                - textbox "Numero de solapin" [ref=e2377]
+            - generic [ref=e2378]:
+              - generic [ref=e2379]: Perifericos - Cantidad Recibida
+              - generic [ref=e2380]:
+                - generic [ref=e2381]:
+                  - generic [ref=e2382]: PC
+                  - generic [ref=e2383]: "Ent: 6"
+                  - spinbutton [ref=e2384]
+                - generic [ref=e2385]:
+                  - generic [ref=e2386]: Monitores
+                  - generic [ref=e2387]: "Ent: 6"
+                  - spinbutton [ref=e2388]
+                - generic [ref=e2389]:
+                  - generic [ref=e2390]: Teclados
+                  - generic [ref=e2391]: "Ent: 6"
+                  - spinbutton [ref=e2392]
+                - generic [ref=e2393]:
+                  - generic [ref=e2394]: Mouse
+                  - generic [ref=e2395]: "Ent: 6"
+                  - spinbutton [ref=e2396]
+                - generic [ref=e2397]:
+                  - generic [ref=e2398]: Sillas
+                  - generic [ref=e2399]: "Ent: 8"
+                  - spinbutton [ref=e2400]
+                - generic [ref=e2401]:
+                  - generic [ref=e2402]: Mesas
+                  - generic [ref=e2403]: "Ent: 6"
+                  - spinbutton [ref=e2404]
+                - generic [ref=e2405]:
+                  - generic [ref=e2406]: Switch
+                  - generic [ref=e2407]: "Ent: 1"
+                  - spinbutton [ref=e2408]
+                - generic [ref=e2409]:
+                  - generic [ref=e2410]: Cables de Red
+                  - generic [ref=e2411]: "Ent: 10"
+                  - spinbutton [ref=e2412]
+                - generic [ref=e2413]:
+                  - generic [ref=e2414]: C. Aliment.
+                  - generic [ref=e2415]: "Ent: 8"
+                  - spinbutton [ref=e2416]
+                - generic [ref=e2417]:
+                  - generic [ref=e2418]: UPS
+                  - generic [ref=e2419]: "Ent: 3"
+                  - spinbutton [ref=e2420]
+                - generic [ref=e2421]:
+                  - generic [ref=e2422]: Sellos-Cdados
+                  - generic [ref=e2423]: "Ent: 1"
+                  - spinbutton [ref=e2424]
+            - generic [ref=e2425]:
+              - generic [ref=e2426]: Observaciones
+              - textbox [ref=e2427]
+            - button "Guardar Recibo" [disabled] [ref=e2428]

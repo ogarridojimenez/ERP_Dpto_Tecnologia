@@ -1,0 +1,50 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e23] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e24] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e25] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e26] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - link "← Volver a Áreas" [ref=e30] [cursor=pointer]:
+              - /url: /aft/areas
+            - heading "E2E-001 - Area de Prueba E2E" [level=1] [ref=e31]
+            - paragraph [ref=e32]: 0 MBs registrados · Creada el 2 de junio de 2026
+          - generic [ref=e33]:
+            - button "✏️ Editar" [ref=e34]
+            - button "🗑️ Eliminar" [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e38]:
+            - heading "📤 Cargar MBs desde Excel" [level=2] [ref=e39]
+            - paragraph [ref=e40]:
+              - text: Sube el Listado de Activos Fijos del área. El sistema extrae los MBs (formato mb000012345) y la descripción.
+              - text: ⚠️ Al subir un nuevo Excel se reemplazan los MBs anteriores.
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: Archivo Excel
+              - button "Choose File" [active] [ref=e44]
+            - button "Subir y Procesar" [ref=e45]
+        - generic [ref=e46]:
+          - heading "MBs del Área (0)" [level=2] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e50]: 📋
+            - paragraph [ref=e51]: No hay MBs cargados
+            - paragraph [ref=e52]: Sube el Excel del área para empezar.
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e53]

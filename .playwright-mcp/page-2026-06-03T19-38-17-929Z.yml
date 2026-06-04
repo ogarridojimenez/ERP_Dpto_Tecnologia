@@ -1,0 +1,93 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e1381] [cursor=pointer]:
+    - generic [ref=e1384]:
+      - text: Rendering
+      - generic [ref=e1385]:
+        - generic [ref=e1386]: .
+        - generic [ref=e1387]: .
+        - generic [ref=e1388]: .
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e1389]:
+        - link "← Volver al parte" [ref=e1391] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e1392]:
+          - generic [ref=e1393]:
+            - heading "🔬 Laboratorio 202" [level=1] [ref=e1394]
+            - paragraph [ref=e1395]: LAB-202
+          - generic [ref=e1396]:
+            - button "Entrega ✓" [ref=e1397]
+            - button "Recibo" [ref=e1398]
+          - generic [ref=e1400]:
+            - generic [ref=e1401]:
+              - generic [ref=e1402]:
+                - generic [ref=e1403]: Nombre (Recibe)
+                - textbox "Nombre completo" [ref=e1404]
+              - generic [ref=e1405]:
+                - generic [ref=e1406]: Solapin (Recibe)
+                - textbox "Numero de solapin" [ref=e1407]
+            - generic [ref=e1408]:
+              - generic [ref=e1409]: Perifericos - Cantidad Recibida
+              - generic [ref=e1410]:
+                - generic [ref=e1411]:
+                  - generic [ref=e1412]: PC
+                  - generic [ref=e1413]: "Ent: 8"
+                  - spinbutton [ref=e1414]
+                - generic [ref=e1415]:
+                  - generic [ref=e1416]: Monitores
+                  - generic [ref=e1417]: "Ent: 8"
+                  - spinbutton [ref=e1418]
+                - generic [ref=e1419]:
+                  - generic [ref=e1420]: Teclados
+                  - generic [ref=e1421]: "Ent: 8"
+                  - spinbutton [ref=e1422]
+                - generic [ref=e1423]:
+                  - generic [ref=e1424]: Mouse
+                  - generic [ref=e1425]: "Ent: 8"
+                  - spinbutton [ref=e1426]
+                - generic [ref=e1427]:
+                  - generic [ref=e1428]: Sillas
+                  - generic [ref=e1429]: "Ent: 10"
+                  - spinbutton [ref=e1430]
+                - generic [ref=e1431]:
+                  - generic [ref=e1432]: Mesas
+                  - generic [ref=e1433]: "Ent: 8"
+                  - spinbutton [ref=e1434]
+                - generic [ref=e1435]:
+                  - generic [ref=e1436]: Switch
+                  - generic [ref=e1437]: "Ent: 1"
+                  - spinbutton [ref=e1438]
+                - generic [ref=e1439]:
+                  - generic [ref=e1440]: Cables de Red
+                  - generic [ref=e1441]: "Ent: 15"
+                  - spinbutton [ref=e1442]
+                - generic [ref=e1443]:
+                  - generic [ref=e1444]: C. Aliment.
+                  - generic [ref=e1445]: "Ent: 10"
+                  - spinbutton [ref=e1446]
+                - generic [ref=e1447]:
+                  - generic [ref=e1448]: UPS
+                  - generic [ref=e1449]: "Ent: 4"
+                  - spinbutton [ref=e1450]
+                - generic [ref=e1451]:
+                  - generic [ref=e1452]: Sellos-Cdados
+                  - generic [ref=e1453]: "Ent: 1"
+                  - spinbutton [ref=e1454]
+            - generic [ref=e1455]:
+              - generic [ref=e1456]: Observaciones
+              - textbox [ref=e1457]
+            - button "Guardar Recibo" [disabled] [ref=e1458]

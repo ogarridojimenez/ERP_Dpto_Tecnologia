@@ -1,0 +1,93 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e1865] [cursor=pointer]:
+    - generic [ref=e1868]:
+      - text: Rendering
+      - generic [ref=e1869]:
+        - generic [ref=e1870]: .
+        - generic [ref=e1871]: .
+        - generic [ref=e1872]: .
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e1873]:
+        - link "← Volver al parte" [ref=e1875] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e1876]:
+          - generic [ref=e1877]:
+            - heading "🔬 Laboratorio 207" [level=1] [ref=e1878]
+            - paragraph [ref=e1879]: LAB-207
+          - generic [ref=e1880]:
+            - button "Entrega ✓" [ref=e1881]
+            - button "Recibo" [ref=e1882]
+          - generic [ref=e1884]:
+            - generic [ref=e1885]:
+              - generic [ref=e1886]:
+                - generic [ref=e1887]: Nombre (Recibe)
+                - textbox "Nombre completo" [ref=e1888]
+              - generic [ref=e1889]:
+                - generic [ref=e1890]: Solapin (Recibe)
+                - textbox "Numero de solapin" [ref=e1891]
+            - generic [ref=e1892]:
+              - generic [ref=e1893]: Perifericos - Cantidad Recibida
+              - generic [ref=e1894]:
+                - generic [ref=e1895]:
+                  - generic [ref=e1896]: PC
+                  - generic [ref=e1897]: "Ent: 12"
+                  - spinbutton [ref=e1898]
+                - generic [ref=e1899]:
+                  - generic [ref=e1900]: Monitores
+                  - generic [ref=e1901]: "Ent: 12"
+                  - spinbutton [ref=e1902]
+                - generic [ref=e1903]:
+                  - generic [ref=e1904]: Teclados
+                  - generic [ref=e1905]: "Ent: 12"
+                  - spinbutton [ref=e1906]
+                - generic [ref=e1907]:
+                  - generic [ref=e1908]: Mouse
+                  - generic [ref=e1909]: "Ent: 12"
+                  - spinbutton [ref=e1910]
+                - generic [ref=e1911]:
+                  - generic [ref=e1912]: Sillas
+                  - generic [ref=e1913]: "Ent: 20"
+                  - spinbutton [ref=e1914]
+                - generic [ref=e1915]:
+                  - generic [ref=e1916]: Mesas
+                  - generic [ref=e1917]: "Ent: 12"
+                  - spinbutton [ref=e1918]
+                - generic [ref=e1919]:
+                  - generic [ref=e1920]: Switch
+                  - generic [ref=e1921]: "Ent: 3"
+                  - spinbutton [ref=e1922]
+                - generic [ref=e1923]:
+                  - generic [ref=e1924]: Cables de Red
+                  - generic [ref=e1925]: "Ent: 25"
+                  - spinbutton [ref=e1926]
+                - generic [ref=e1927]:
+                  - generic [ref=e1928]: C. Aliment.
+                  - generic [ref=e1929]: "Ent: 18"
+                  - spinbutton [ref=e1930]
+                - generic [ref=e1931]:
+                  - generic [ref=e1932]: UPS
+                  - generic [ref=e1933]: "Ent: 6"
+                  - spinbutton [ref=e1934]
+                - generic [ref=e1935]:
+                  - generic [ref=e1936]: Sellos-Cdados
+                  - generic [ref=e1937]: "Ent: 3"
+                  - spinbutton [ref=e1938]
+            - generic [ref=e1939]:
+              - generic [ref=e1940]: Observaciones
+              - textbox [ref=e1941]
+            - button "Guardar Recibo" [disabled] [ref=e1942]

@@ -1,0 +1,48 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e23] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e24] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e25] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e26] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - heading "Historial de Controles" [level=1] [ref=e30]
+            - paragraph [ref=e31]: Todos los controles realizados y en curso
+          - link "← Volver" [ref=e32] [cursor=pointer]:
+            - /url: /aft
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - textbox "🔍 Buscar por código o nombre de área..." [ref=e35]
+            - combobox [ref=e36]:
+              - option "Todos los estados"
+              - option "Planificado"
+              - option "En curso" [selected]
+              - option "Completado"
+              - option "Cancelado"
+            - combobox [ref=e37]:
+              - option "Todas las áreas" [selected]
+              - option "E2E-001"
+          - paragraph [ref=e38]: 0 de 1 controles
+        - generic [ref=e39]:
+          - generic [ref=e61]: 📚
+          - paragraph [ref=e62]: Sin controles en el historial
+          - link "Iniciar primer control" [ref=e63] [cursor=pointer]:
+            - /url: /aft/controles/nuevo
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e60]

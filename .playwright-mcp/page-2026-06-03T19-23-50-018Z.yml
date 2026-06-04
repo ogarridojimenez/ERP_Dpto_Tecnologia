@@ -1,0 +1,42 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]
+  - alert [ref=e33]
+  - generic [ref=e50]:
+    - complementary [ref=e51]:
+      - link "SITRADE" [ref=e53] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e54]:
+        - link "Dashboard" [ref=e72] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [active] [ref=e73] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e74] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e55]:
+        - generic [ref=e56]: tecnicoE@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e58]
+    - main [ref=e59]:
+      - generic [ref=e75]:
+        - generic [ref=e77]:
+          - heading "Guardia - Partes Diarios" [level=1] [ref=e78]
+          - paragraph [ref=e79]: Control de entrega y recibo de perifericos por area
+          - generic [ref=e80]:
+            - link "Nuevo Parte" [ref=e81] [cursor=pointer]:
+              - /url: /guardia/nueva
+            - link "Configuracion" [ref=e82] [cursor=pointer]:
+              - /url: /guardia/config
+        - generic [ref=e85]:
+          - heading "Historial de Partes" [level=2] [ref=e87]
+          - generic [ref=e89]:
+            - 'link "📋 2 de junio de 2026 Creado: 3/6/2026" [ref=e90] [cursor=pointer]':
+              - /url: /guardia/abf6b43b-3916-46b2-843b-5abe3ca74389
+              - generic [ref=e91]:
+                - generic [ref=e92]: 📋
+                - generic [ref=e93]:
+                  - paragraph [ref=e94]: 2 de junio de 2026
+                  - paragraph [ref=e95]: "Creado: 3/6/2026"
+            - generic [ref=e96]:
+              - generic [ref=e97]: Borrador
+              - button "Eliminar" [ref=e98]:
+                - img [ref=e99]

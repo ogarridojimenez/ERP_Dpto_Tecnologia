@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - heading "SITRADE" [level=1] [ref=e5]
+      - paragraph [ref=e6]: Sistema Integrado de Tecnología, Activos y Departamentos
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: Correo electrónico
+        - textbox "Correo electrónico" [ref=e10]:
+          - /placeholder: usuario@uci.cu
+          - text: admin@sitrade.uci.cu
+      - generic [ref=e11]:
+        - generic [ref=e12]: Contraseña
+        - textbox "Contraseña" [ref=e13]: Admin2026!
+      - button "Entrar" [ref=e14]
+  - button "Open Next.js Dev Tools" [ref=e20] [cursor=pointer]:
+    - img [ref=e21]
+  - alert [ref=e24]

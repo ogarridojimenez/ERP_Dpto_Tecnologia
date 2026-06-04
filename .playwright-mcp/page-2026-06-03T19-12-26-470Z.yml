@@ -1,0 +1,33 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e24]
+  - generic [ref=e52]:
+    - complementary [ref=e53]:
+      - link "SITRADE" [ref=e55] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e56]:
+        - link "Dashboard" [ref=e74] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e75] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e76] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e57]:
+        - generic [ref=e58]: tecnico1@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e60]
+    - main [ref=e61]:
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - heading "Nuevo Parte de Guardia" [level=1] [ref=e98]
+          - paragraph [ref=e99]: Crea un parte para el dia indicado. Se generaran registros para cada area activa.
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - generic [ref=e102]: Fecha del Parte
+            - textbox [ref=e103]: 2026-06-03
+          - generic [ref=e104]:
+            - generic [ref=e105]: Observaciones Generales
+            - textbox "Observaciones generales del parte (opcional)" [ref=e106]
+          - generic [ref=e107]:
+            - button "Crear Parte" [ref=e108]
+            - button "Cancelar" [ref=e109]

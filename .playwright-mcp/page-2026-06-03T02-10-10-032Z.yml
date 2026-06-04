@@ -1,0 +1,35 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e20] [cursor=pointer]:
+    - img [ref=e21]
+  - alert [ref=e24]
+  - generic [ref=e34]:
+    - complementary [ref=e35]:
+      - link "SITRADE" [ref=e37] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e38]:
+        - link "Dashboard" [ref=e39] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e40] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e41] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e42] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e43] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e44]:
+        - generic [ref=e45]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e46]
+    - main [ref=e47]:
+      - generic [ref=e48]:
+        - heading "Dashboard" [level=1] [ref=e49]
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - paragraph [ref=e52]: Urgentes pendientes
+            - paragraph [ref=e53]: "0"
+          - generic [ref=e54]:
+            - paragraph [ref=e55]: Incidencias abiertas
+            - paragraph [ref=e56]: "0"
+          - generic [ref=e57]:
+            - paragraph [ref=e58]: Total reportadas
+            - paragraph [ref=e59]: "0"

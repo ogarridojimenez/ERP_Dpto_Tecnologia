@@ -1,0 +1,8 @@
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://10.2.0.2:3000
+- Environments: .env
+✓ Ready in 591ms
+
+○ Compiling /_not-found/page ...
+ GET /sw.js 404 in 5.0s (next.js: 4.0s, proxy.ts: 767ms, application-code: 192ms)

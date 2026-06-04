@@ -1,0 +1,89 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e2839] [cursor=pointer]:
+    - generic [ref=e2842]:
+      - text: Rendering
+      - generic [ref=e2843]:
+        - generic [ref=e2844]: .
+        - generic [ref=e2845]: .
+        - generic [ref=e2846]: .
+  - alert [ref=e22]
+  - generic [ref=e442]:
+    - complementary [ref=e443]:
+      - link "SITRADE" [ref=e445] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e446]:
+        - link "Dashboard" [ref=e464] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e465] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e466] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e447]:
+        - generic [ref=e448]: tecnicoR@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e450]
+    - main [ref=e451]:
+      - generic [ref=e2847]:
+        - link "← Volver al parte" [ref=e2849] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e2850]:
+          - generic [ref=e2851]:
+            - heading "🏢 Oficina del Jefe de Turno" [level=1] [ref=e2852]
+            - paragraph [ref=e2853]: OF-JT
+          - generic [ref=e2854]:
+            - button "Entrega ✓" [ref=e2855]
+            - button "Recibo" [ref=e2856]
+          - generic [ref=e2858]:
+            - generic [ref=e2859]:
+              - generic [ref=e2860]:
+                - generic [ref=e2861]: Nombre (Recibe)
+                - textbox "Nombre completo" [ref=e2862]
+              - generic [ref=e2863]:
+                - generic [ref=e2864]: Solapin (Recibe)
+                - textbox "Numero de solapin" [ref=e2865]
+            - generic [ref=e2866]:
+              - generic [ref=e2867]: Perifericos - Cantidad Recibida
+              - generic [ref=e2868]:
+                - generic [ref=e2869]:
+                  - generic [ref=e2870]: PC
+                  - generic [ref=e2871]: "Ent: 1"
+                  - spinbutton [ref=e2872]
+                - generic [ref=e2873]:
+                  - generic [ref=e2874]: Monitores
+                  - generic [ref=e2875]: "Ent: 2"
+                  - spinbutton [ref=e2876]
+                - generic [ref=e2877]:
+                  - generic [ref=e2878]: Teclados
+                  - generic [ref=e2879]: "Ent: 1"
+                  - spinbutton [ref=e2880]
+                - generic [ref=e2881]:
+                  - generic [ref=e2882]: Mouse
+                  - generic [ref=e2883]: "Ent: 1"
+                  - spinbutton [ref=e2884]
+                - generic [ref=e2885]:
+                  - generic [ref=e2886]: Sillas
+                  - generic [ref=e2887]: "Ent: 2"
+                  - spinbutton [ref=e2888]
+                - generic [ref=e2889]:
+                  - generic [ref=e2890]: Mesas
+                  - generic [ref=e2891]: "Ent: 1"
+                  - spinbutton [ref=e2892]
+                - generic [ref=e2893]:
+                  - generic [ref=e2894]: UPS
+                  - generic [ref=e2895]: "Ent: 1"
+                  - spinbutton [ref=e2896]
+                - generic [ref=e2897]:
+                  - generic [ref=e2898]: Cables Red
+                  - generic [ref=e2899]: "Ent: 4"
+                  - spinbutton [ref=e2900]
+                - generic [ref=e2901]:
+                  - generic [ref=e2902]: C. Aliment.
+                  - generic [ref=e2903]: "Ent: 2"
+                  - spinbutton [ref=e2904]
+                - generic [ref=e2905]:
+                  - generic [ref=e2906]: TV
+                  - generic [ref=e2907]: "Ent: 1"
+                  - spinbutton [ref=e2908]
+            - generic [ref=e2909]:
+              - generic [ref=e2910]: Observaciones
+              - textbox [ref=e2911]
+            - button "Guardar Recibo" [disabled] [ref=e2912]

@@ -1,0 +1,152 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e366] [cursor=pointer]:
+    - generic [ref=e369]:
+      - text: Rendering
+      - generic [ref=e370]:
+        - generic [ref=e371]: .
+        - generic [ref=e372]: .
+        - generic [ref=e373]: .
+  - alert [ref=e33]
+  - generic [ref=e50]:
+    - complementary [ref=e51]:
+      - link "SITRADE" [ref=e53] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e54]:
+        - link "Dashboard" [ref=e72] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e73] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e74] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e55]:
+        - generic [ref=e56]: tecnicoE@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e58]
+    - main [ref=e59]:
+      - generic [ref=e374]:
+        - generic [ref=e376]:
+          - generic [ref=e377]:
+            - link "← Volver" [ref=e378] [cursor=pointer]:
+              - /url: /guardia
+            - generic [ref=e379]: Borrador
+          - heading "Parte de Guardia" [level=1] [ref=e380]
+          - paragraph [ref=e381]: 3 de junio de 2026
+          - paragraph [ref=e382]: Parte de prueba flujo E-R
+        - generic [ref=e385]:
+          - generic [ref=e386]:
+            - generic [ref=e387]:
+              - generic [ref=e388]:
+                - generic [ref=e389]: 🔬
+                - generic [ref=e390]:
+                  - paragraph [ref=e391]: Laboratorio 201
+                  - paragraph [ref=e392]: LAB-201
+              - generic [ref=e394]: Entregado
+            - generic [ref=e395]:
+              - generic [ref=e396]:
+                - text: "Entrega:"
+                - generic [ref=e397]: Tecnico Entrega (Sol. SOL-E001)
+                - text: 3/6/2026, 3:26:55 p. m.
+              - table [ref=e399]:
+                - rowgroup [ref=e400]:
+                  - row "Periferico Entrega Recibo Estado" [ref=e401]:
+                    - columnheader "Periferico" [ref=e402]
+                    - columnheader "Entrega" [ref=e403]
+                    - columnheader "Recibo" [ref=e404]
+                    - columnheader "Estado" [ref=e405]
+                - rowgroup [ref=e406]:
+                  - row "PC 10 - -" [ref=e407]:
+                    - cell "PC" [ref=e408]
+                    - cell "10" [ref=e409]
+                    - cell "-" [ref=e410]
+                    - cell "-" [ref=e411]
+                  - row "Monitores 10 - -" [ref=e412]:
+                    - cell "Monitores" [ref=e413]
+                    - cell "10" [ref=e414]
+                    - cell "-" [ref=e415]
+                    - cell "-" [ref=e416]
+                  - row "Teclados 10 - -" [ref=e417]:
+                    - cell "Teclados" [ref=e418]
+                    - cell "10" [ref=e419]
+                    - cell "-" [ref=e420]
+                    - cell "-" [ref=e421]
+                  - row "Mouse 10 - -" [ref=e422]:
+                    - cell "Mouse" [ref=e423]
+                    - cell "10" [ref=e424]
+                    - cell "-" [ref=e425]
+                    - cell "-" [ref=e426]
+                  - row "Sillas 15 - -" [ref=e427]:
+                    - cell "Sillas" [ref=e428]
+                    - cell "15" [ref=e429]
+                    - cell "-" [ref=e430]
+                    - cell "-" [ref=e431]
+                  - row "Mesas 10 - -" [ref=e432]:
+                    - cell "Mesas" [ref=e433]
+                    - cell "10" [ref=e434]
+                    - cell "-" [ref=e435]
+                    - cell "-" [ref=e436]
+                  - row "Switch 2 - -" [ref=e437]:
+                    - cell "Switch" [ref=e438]
+                    - cell "2" [ref=e439]
+                    - cell "-" [ref=e440]
+                    - cell "-" [ref=e441]
+                  - row "Cables de Red 20 - -" [ref=e442]:
+                    - cell "Cables de Red" [ref=e443]
+                    - cell "20" [ref=e444]
+                    - cell "-" [ref=e445]
+                    - cell "-" [ref=e446]
+                  - row "C. Aliment. 15 - -" [ref=e447]:
+                    - cell "C. Aliment." [ref=e448]
+                    - cell "15" [ref=e449]
+                    - cell "-" [ref=e450]
+                    - cell "-" [ref=e451]
+                  - row "UPS 5 - -" [ref=e452]:
+                    - cell "UPS" [ref=e453]
+                    - cell "5" [ref=e454]
+                    - cell "-" [ref=e455]
+                    - cell "-" [ref=e456]
+                  - row "Sellos-Cdados 2 - -" [ref=e457]:
+                    - cell "Sellos-Cdados" [ref=e458]
+                    - cell "2" [ref=e459]
+                    - cell "-" [ref=e460]
+                    - cell "-" [ref=e461]
+              - link "Ver / Editar" [ref=e462] [cursor=pointer]:
+                - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5/57954348-43cd-4fe9-b892-9c0e6bb264fd
+          - generic [ref=e463]:
+            - generic [ref=e464]:
+              - generic [ref=e465]:
+                - generic [ref=e466]: 🔬
+                - generic [ref=e467]:
+                  - paragraph [ref=e468]: Laboratorio 202
+                  - paragraph [ref=e469]: LAB-202
+              - generic [ref=e471]: Pendiente
+            - link "Llenar Entrega" [ref=e473] [cursor=pointer]:
+              - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5/90359f65-d2ce-42d1-bc80-6c49220004eb
+          - generic [ref=e474]:
+            - generic [ref=e475]:
+              - generic [ref=e476]:
+                - generic [ref=e477]: 🔬
+                - generic [ref=e478]:
+                  - paragraph [ref=e479]: Laboratorio 207
+                  - paragraph [ref=e480]: LAB-207
+              - generic [ref=e482]: Pendiente
+            - link "Llenar Entrega" [ref=e484] [cursor=pointer]:
+              - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5/1fabc7a8-d665-4814-92c4-79398b92b89a
+          - generic [ref=e485]:
+            - generic [ref=e486]:
+              - generic [ref=e487]:
+                - generic [ref=e488]: 🔬
+                - generic [ref=e489]:
+                  - paragraph [ref=e490]: Laboratorio 208
+                  - paragraph [ref=e491]: LAB-208
+              - generic [ref=e493]: Pendiente
+            - link "Llenar Entrega" [ref=e495] [cursor=pointer]:
+              - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5/10e74532-17d1-455c-a737-2975496d797e
+          - generic [ref=e496]:
+            - generic [ref=e497]:
+              - generic [ref=e498]:
+                - generic [ref=e499]: 🏢
+                - generic [ref=e500]:
+                  - paragraph [ref=e501]: Oficina del Jefe de Turno
+                  - paragraph [ref=e502]: OF-JT
+              - generic [ref=e504]: Pendiente
+            - link "Llenar Entrega" [ref=e506] [cursor=pointer]:
+              - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5/592e1885-0b48-4f5a-a164-8ad833d51630

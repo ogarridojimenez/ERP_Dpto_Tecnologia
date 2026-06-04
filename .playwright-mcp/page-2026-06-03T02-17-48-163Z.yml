@@ -1,0 +1,142 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e24] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e25] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e26] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e27] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - link "← Volver a Áreas" [ref=e31] [cursor=pointer]:
+              - /url: /aft/areas
+            - heading "E2E-001 - Area de Prueba E2E" [level=1] [ref=e32]
+            - paragraph [ref=e33]: 20 MBs registrados · Creada el 2 de junio de 2026
+          - generic [ref=e34]:
+            - button "✏️ Editar" [ref=e35]
+            - button "🗑️ Eliminar" [ref=e36]
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - generic [ref=e39]:
+              - heading "📤 Cargar MBs desde Excel" [level=2] [ref=e40]
+              - paragraph [ref=e41]:
+                - text: Sube el Listado de Activos Fijos del área. El sistema extrae los MBs (formato mb000012345) y la descripción.
+                - text: ⚠️ Al subir un nuevo Excel se reemplazan los MBs anteriores.
+            - generic [ref=e42]:
+              - button "🏷️ Descargar QRs PDF (20)" [ref=e43]
+              - generic [ref=e144]: ✅ 20 QRs exportados.
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic [ref=e46]: Archivo Excel
+              - button "Choose File" [ref=e47]
+            - button "Subir y Procesar" [ref=e48]
+        - generic [ref=e49]:
+          - heading "MBs del Área (20)" [level=2] [ref=e51]
+          - table [ref=e53]:
+            - rowgroup [ref=e54]:
+              - row "# MB Descripción" [ref=e55]:
+                - columnheader "#" [ref=e56]
+                - columnheader "MB" [ref=e57]
+                - columnheader "Descripción" [ref=e58]
+            - rowgroup [ref=e59]:
+              - row "1 MB000077001 PC HP Compaq 6005 - Lab 1" [ref=e60]:
+                - cell "1" [ref=e61]
+                - cell "MB000077001" [ref=e62]
+                - cell "PC HP Compaq 6005 - Lab 1" [ref=e63]
+              - row "2 MB000077002 Monitor Dell 19\" - Lab 1" [ref=e64]:
+                - cell "2" [ref=e65]
+                - cell "MB000077002" [ref=e66]
+                - cell "Monitor Dell 19\" - Lab 1" [ref=e67]
+              - row "3 MB000077003 PC Lenovo ThinkCentre - Lab 1" [ref=e68]:
+                - cell "3" [ref=e69]
+                - cell "MB000077003" [ref=e70]
+                - cell "PC Lenovo ThinkCentre - Lab 1" [ref=e71]
+              - row "4 MB000077004 Teclado Logitech K120" [ref=e72]:
+                - cell "4" [ref=e73]
+                - cell "MB000077004" [ref=e74]
+                - cell "Teclado Logitech K120" [ref=e75]
+              - row "5 MB000077005 Mouse Genius DX-110" [ref=e76]:
+                - cell "5" [ref=e77]
+                - cell "MB000077005" [ref=e78]
+                - cell "Mouse Genius DX-110" [ref=e79]
+              - row "6 MB000077006 Impresora HP LaserJet 1020" [ref=e80]:
+                - cell "6" [ref=e81]
+                - cell "MB000077006" [ref=e82]
+                - cell "Impresora HP LaserJet 1020" [ref=e83]
+              - row "7 MB000077007 Switch TP-Link 8 puertos" [ref=e84]:
+                - cell "7" [ref=e85]
+                - cell "MB000077007" [ref=e86]
+                - cell "Switch TP-Link 8 puertos" [ref=e87]
+              - row "8 MB000077008 UPS APC Back-UPS 600VA" [ref=e88]:
+                - cell "8" [ref=e89]
+                - cell "MB000077008" [ref=e90]
+                - cell "UPS APC Back-UPS 600VA" [ref=e91]
+              - row "9 MB000077009 Escaner Epson Perfection V19" [ref=e92]:
+                - cell "9" [ref=e93]
+                - cell "MB000077009" [ref=e94]
+                - cell "Escaner Epson Perfection V19" [ref=e95]
+              - row "10 MB000077010 Laptop HP ProBook 440 G7" [ref=e96]:
+                - cell "10" [ref=e97]
+                - cell "MB000077010" [ref=e98]
+                - cell "Laptop HP ProBook 440 G7" [ref=e99]
+              - row "11 MB000077011 Router MikroTik hAP ac2" [ref=e100]:
+                - cell "11" [ref=e101]
+                - cell "MB000077011" [ref=e102]
+                - cell "Router MikroTik hAP ac2" [ref=e103]
+              - row "12 MB000077012 Access Point TP-Link EAP245" [ref=e104]:
+                - cell "12" [ref=e105]
+                - cell "MB000077012" [ref=e106]
+                - cell "Access Point TP-Link EAP245" [ref=e107]
+              - row "13 MB000077013 Servidor Dell PowerEdge T40" [ref=e108]:
+                - cell "13" [ref=e109]
+                - cell "MB000077013" [ref=e110]
+                - cell "Servidor Dell PowerEdge T40" [ref=e111]
+              - row "14 MB000077014 Disco Duro Externo Seagate 2TB" [ref=e112]:
+                - cell "14" [ref=e113]
+                - cell "MB000077014" [ref=e114]
+                - cell "Disco Duro Externo Seagate 2TB" [ref=e115]
+              - row "15 MB000077015 Memoria USB Kingston 32GB" [ref=e116]:
+                - cell "15" [ref=e117]
+                - cell "MB000077015" [ref=e118]
+                - cell "Memoria USB Kingston 32GB" [ref=e119]
+              - row "16 MB000077016 Camara Web Logitech C920" [ref=e120]:
+                - cell "16" [ref=e121]
+                - cell "MB000077016" [ref=e122]
+                - cell "Camara Web Logitech C920" [ref=e123]
+              - row "17 MB000077017 Audifonos HyperX Cloud II" [ref=e124]:
+                - cell "17" [ref=e125]
+                - cell "MB000077017" [ref=e126]
+                - cell "Audifonos HyperX Cloud II" [ref=e127]
+              - row "18 MB000077018 Microfono Blue Yeti" [ref=e128]:
+                - cell "18" [ref=e129]
+                - cell "MB000077018" [ref=e130]
+                - cell "Microfono Blue Yeti" [ref=e131]
+              - row "19 MB000077019 Tablet Samsung Galaxy Tab A8" [ref=e132]:
+                - cell "19" [ref=e133]
+                - cell "MB000077019" [ref=e134]
+                - cell "Tablet Samsung Galaxy Tab A8" [ref=e135]
+              - row "20 MB000077020 Proyector Epson PowerLite X41" [ref=e136]:
+                - cell "20" [ref=e137]
+                - cell "MB000077020" [ref=e138]
+                - cell "Proyector Epson PowerLite X41" [ref=e139]
+        - generic [ref=e140]:
+          - heading "¿Listo para iniciar un control?" [level=3] [ref=e141]
+          - paragraph [ref=e142]: Una vez que imprimas los QRs y los pegues a los activos, inicia un control de inventario.
+          - link "➕ Iniciar Control de esta Área" [ref=e143] [cursor=pointer]:
+            - /url: /aft/controles/nuevo?area_id=da43049f-5699-452d-aa85-ea94e5bf401d
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e22]

@@ -1,0 +1,21 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]
+      - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e12]:
+        - heading "Dashboard" [level=1] [ref=e13]
+        - generic [ref=e14]:
+          - generic [ref=e15]:
+            - paragraph [ref=e16]: Urgentes pendientes
+            - paragraph [ref=e17]: "0"
+          - generic [ref=e18]:
+            - paragraph [ref=e19]: Incidencias abiertas
+            - paragraph [ref=e20]: "0"
+          - generic [ref=e21]:
+            - paragraph [ref=e22]: Total reportadas
+            - paragraph [ref=e23]: "0"
+  - alert [ref=e24]

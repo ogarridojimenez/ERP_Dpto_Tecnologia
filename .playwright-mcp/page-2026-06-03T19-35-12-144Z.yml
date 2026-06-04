@@ -1,0 +1,79 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e24] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e25] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e7]:
+        - generic [ref=e8]: tecnicoE@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e356]:
+        - link "← Volver al parte" [ref=e358] [cursor=pointer]:
+          - /url: /guardia/9c0cfe4b-7d5e-4da0-a3b3-e96a2a00ebe5
+        - generic [ref=e359]:
+          - generic [ref=e360]:
+            - heading "🏢 Oficina del Jefe de Turno" [level=1] [ref=e361]
+            - paragraph [ref=e362]: OF-JT
+          - generic [ref=e363]:
+            - button "Entrega" [ref=e364]
+            - button "Recibo" [disabled] [ref=e365]
+          - generic [ref=e367]:
+            - generic [ref=e368]:
+              - generic [ref=e369]:
+                - generic [ref=e370]: Nombre (Entrega)
+                - textbox "Nombre completo" [ref=e371]: Tecnico Entrega
+              - generic [ref=e372]:
+                - generic [ref=e373]: Solapin (Entrega)
+                - textbox "Numero de solapin" [ref=e374]: SOL-E001
+            - generic [ref=e375]:
+              - generic [ref=e376]: Perifericos - Cantidad Entregada
+              - generic [ref=e377]:
+                - generic [ref=e378]:
+                  - generic [ref=e379]: PC
+                  - spinbutton [ref=e380]: "1"
+                - generic [ref=e381]:
+                  - generic [ref=e382]: Monitores
+                  - spinbutton [ref=e383]: "2"
+                - generic [ref=e384]:
+                  - generic [ref=e385]: Teclados
+                  - spinbutton [ref=e386]: "1"
+                - generic [ref=e387]:
+                  - generic [ref=e388]: Mouse
+                  - spinbutton [ref=e389]: "1"
+                - generic [ref=e390]:
+                  - generic [ref=e391]: Sillas
+                  - spinbutton [ref=e392]: "2"
+                - generic [ref=e393]:
+                  - generic [ref=e394]: Mesas
+                  - spinbutton [ref=e395]: "1"
+                - generic [ref=e396]:
+                  - generic [ref=e397]: UPS
+                  - spinbutton [ref=e398]: "1"
+                - generic [ref=e399]:
+                  - generic [ref=e400]: Cables Red
+                  - spinbutton [ref=e401]: "4"
+                - generic [ref=e402]:
+                  - generic [ref=e403]: C. Aliment.
+                  - spinbutton [ref=e404]: "2"
+                - generic [ref=e405]:
+                  - generic [ref=e406]: TV
+                  - spinbutton [ref=e407]: "1"
+            - generic [ref=e408]:
+              - generic [ref=e409]: Observaciones
+              - textbox [ref=e410]: Entrega Oficina JT
+            - button "Guardando..." [disabled] [ref=e420]
+  - button "Open Next.js Dev Tools" [ref=e421] [cursor=pointer]:
+    - generic [ref=e424]:
+      - text: Rendering
+      - generic [ref=e425]:
+        - generic [ref=e426]: .
+        - generic [ref=e427]: .
+        - generic [ref=e428]: .
+  - alert [ref=e22]

@@ -1,0 +1,42 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - link "SITRADE" [ref=e5] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e6]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e24] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e25] [cursor=pointer]:
+          - /url: /aulas
+        - link "Activos Fijos" [ref=e26] [cursor=pointer]:
+          - /url: /aft
+        - link "RRHH" [ref=e27] [cursor=pointer]:
+          - /url: /rrhh
+      - generic [ref=e7]:
+        - generic [ref=e8]: admin@sitrade.uci.cuadmin
+        - button "Cerrar sesión" [ref=e10]
+    - main [ref=e11]:
+      - generic [ref=e145]:
+        - generic [ref=e146]:
+          - heading "Iniciar Control de Inventario" [level=1] [ref=e147]
+          - paragraph [ref=e148]: El sistema snapshot los MBs del área como esperados. Luego el técnico escanea en el área.
+        - generic [ref=e149]:
+          - generic [ref=e150]:
+            - generic [ref=e151]: Área a Auditar *
+            - combobox [ref=e152]:
+              - option "Seleccione un área..." [selected]
+            - paragraph [ref=e153]: El área debe tener MBs cargados previamente (sube el Excel desde la página del área).
+          - generic [ref=e154]:
+            - generic [ref=e155]: Fecha Planificada *
+            - textbox [ref=e156]: 2026-06-03
+          - generic [ref=e157]:
+            - generic [ref=e158]: Observaciones
+            - 'textbox "Ej: Control trimestral preventivo..." [ref=e159]'
+          - generic [ref=e160]:
+            - button "Cancelar" [ref=e161]
+            - button "Iniciar Control" [ref=e162]
+  - button "Open Next.js Dev Tools" [ref=e18] [cursor=pointer]:
+    - img [ref=e19]
+  - alert [ref=e22]

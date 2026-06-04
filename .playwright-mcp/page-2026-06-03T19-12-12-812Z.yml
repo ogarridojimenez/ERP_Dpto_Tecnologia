@@ -1,0 +1,36 @@
+- generic [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e35] [cursor=pointer]:
+    - img [ref=e36]
+  - alert [ref=e24]
+  - generic [ref=e52]:
+    - complementary [ref=e53]:
+      - link "SITRADE" [ref=e55] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e56]:
+        - link "Dashboard" [ref=e74] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [active] [ref=e75] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e76] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e57]:
+        - generic [ref=e58]: tecnico1@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e60]
+    - main [ref=e61]:
+      - generic [ref=e77]:
+        - generic [ref=e79]:
+          - heading "Guardia - Partes Diarios" [level=1] [ref=e80]
+          - paragraph [ref=e81]: Control de entrega y recibo de perifericos por area
+          - generic [ref=e82]:
+            - link "Nuevo Parte" [ref=e83] [cursor=pointer]:
+              - /url: /guardia/nueva
+            - link "Configuracion" [ref=e84] [cursor=pointer]:
+              - /url: /guardia/config
+        - generic [ref=e87]:
+          - heading "Historial de Partes" [level=2] [ref=e89]
+          - generic [ref=e90]:
+            - generic [ref=e91]: 📋
+            - paragraph [ref=e92]: No hay partes de guardia
+            - paragraph [ref=e93]: Crea un parte para comenzar el control diario.
+            - link "Crear primer parte" [ref=e94] [cursor=pointer]:
+              - /url: /guardia/nueva

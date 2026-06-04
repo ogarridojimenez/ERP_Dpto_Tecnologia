@@ -1,0 +1,34 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e29] [cursor=pointer]:
+    - img [ref=e30]
+  - alert [ref=e33]
+  - generic [ref=e50]:
+    - complementary [ref=e51]:
+      - link "SITRADE" [ref=e53] [cursor=pointer]:
+        - /url: /dashboard
+      - navigation [ref=e54]:
+        - link "Dashboard" [ref=e72] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Guardia" [ref=e73] [cursor=pointer]:
+          - /url: /guardia
+        - link "Aulas" [ref=e74] [cursor=pointer]:
+          - /url: /aulas
+      - generic [ref=e55]:
+        - generic [ref=e56]: tecnicoE@sitrade.uci.cutecnico
+        - button "Cerrar sesión" [ref=e58]
+    - main [ref=e59]:
+      - generic [ref=e102]:
+        - generic [ref=e103]:
+          - heading "Nuevo Parte de Guardia" [level=1] [ref=e104]
+          - paragraph [ref=e105]: Crea un parte para el dia indicado. Se generaran registros para cada area activa.
+        - generic [ref=e106]:
+          - generic [ref=e116]: Ya existe un parte para esta fecha
+          - generic [ref=e107]:
+            - generic [ref=e108]: Fecha del Parte
+            - textbox [ref=e109]: 2026-06-03
+          - generic [ref=e110]:
+            - generic [ref=e111]: Observaciones Generales
+            - textbox "Observaciones generales del parte (opcional)" [ref=e112]: Parte de prueba flujo E-R
+          - generic [ref=e113]:
+            - button "Crear Parte" [ref=e114]
+            - button "Cancelar" [ref=e115]
