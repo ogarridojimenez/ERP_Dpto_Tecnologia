@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { areaAftSchema, controlAftSchema } from "@/lib/schemas/aft";
+import { areaAftSchema, controlAftSchema, uuidSchema, syncScansSchema } from "@/lib/schemas/aft";
 import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
 
 type ActionResult<T = unknown> = {
@@ -82,6 +82,7 @@ export async function updateArea(id: string, formData: FormData) {
 
 export async function deleteArea(id: string) {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
@@ -98,7 +99,7 @@ export async function deleteArea(id: string) {
     const { error } = await admin
       .from("areas_aft")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", id);
+      .eq("id", validatedId);
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
@@ -115,6 +116,7 @@ export async function deleteArea(id: string) {
 
 export async function uploadAreaExcel(areaId: string, formData: FormData) {
   try {
+    const validatedId = uuidSchema.parse(areaId);
     const { user } = await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
@@ -171,12 +173,12 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
     const { error: delErr } = await admin
       .from("mb_area")
       .delete()
-      .eq("area_id", areaId);
+      .eq("area_id", validatedId);
 
     if (delErr) return { success: false, error: "Error limpiando MBs anteriores: " + delErr.message } as ActionResult;
 
     const records = mbs.map(m => ({
-      area_id: areaId,
+      area_id: validatedId,
       mb: m.mb,
       descripcion: m.descripcion,
       user_id: user.id,
@@ -188,7 +190,7 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
 
     if (insErr) return { success: false, error: "Error guardando MBs: " + insErr.message } as ActionResult;
 
-    revalidatePath(`/aft/areas/${areaId}`);
+    revalidatePath(`/aft/areas/${validatedId}`);
     return {
       success: true,
       data: { count: mbs.length, mbs }
@@ -278,6 +280,7 @@ export async function createControl(formData: FormData) {
 
 export async function completeControl(controlId: string) {
   try {
+    const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
@@ -287,11 +290,11 @@ export async function completeControl(controlId: string) {
         estado: "completado",
         fecha_realizada: new Date().toISOString().split("T")[0],
       })
-      .eq("id", controlId);
+      .eq("id", validatedId);
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
-    revalidatePath(`/aft/controles/${controlId}`);
+    revalidatePath(`/aft/controles/${validatedId}`);
     revalidatePath("/aft");
     revalidatePath("/aft/historial");
     return { success: true } as ActionResult;
@@ -302,17 +305,18 @@ export async function completeControl(controlId: string) {
 
 export async function cancelControl(controlId: string) {
   try {
+    const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
       .from("controles_aft")
       .update({ estado: "cancelado" })
-      .eq("id", controlId);
+      .eq("id", validatedId);
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
-    revalidatePath(`/aft/controles/${controlId}`);
+    revalidatePath(`/aft/controles/${validatedId}`);
     revalidatePath("/aft");
     return { success: true } as ActionResult;
   } catch (e) {
@@ -322,19 +326,20 @@ export async function cancelControl(controlId: string) {
 
 export async function deleteControl(controlId: string) {
   try {
+    const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
       .from("controles_aft")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", controlId);
+      .eq("id", validatedId);
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
     revalidatePath("/aft");
     revalidatePath("/aft/historial");
-    revalidatePath(`/aft/controles/${controlId}`);
+    revalidatePath(`/aft/controles/${validatedId}`);
     return { success: true } as ActionResult;
   } catch (e) {
     return { success: false, error: (e as Error).message } as ActionResult;
@@ -367,13 +372,14 @@ export type ReconciliationResult = {
 
 export async function getReconciliation(controlId: string): Promise<ReconciliationResult> {
   try {
+    const validatedId = uuidSchema.parse(controlId);
     await requireAuth();
     const admin = getAdminClient();
 
     const { data: control, error: cErr } = await admin
       .from("controles_aft")
       .select("id, area_id, fecha_planificada, fecha_realizada, estado, areas_aft(codigo, nombre)")
-      .eq("id", controlId)
+      .eq("id", validatedId)
       .single();
 
     if (cErr || !control) {
@@ -383,7 +389,7 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
     const { data: activos, error: aErr } = await admin
       .from("activos_aft")
       .select("mb, descripcion, escaneado, fecha_escaneo")
-      .eq("control_id", controlId)
+      .eq("control_id", validatedId)
       .order("mb");
 
     if (aErr) return { success: false, error: aErr.message };
@@ -430,14 +436,15 @@ export async function syncScans(data: {
   scans: string[];
 }) {
   try {
+    const validated = syncScansSchema.parse(data);
     const { user } = await requireAuth();
     const admin = getAdminClient();
 
-    if (!data.scans || data.scans.length === 0) {
+    if (!validated.scans || validated.scans.length === 0) {
       return { success: true, data: { synced: 0 } } as ActionResult;
     }
 
-    const mbs = data.scans.map(m => m.trim().toUpperCase());
+    const mbs = validated.scans.map(m => m.trim().toUpperCase());
 
     const { error, count } = await admin
       .from("activos_aft")
@@ -446,12 +453,12 @@ export async function syncScans(data: {
         fecha_escaneo: new Date().toISOString(),
         user_id: user.id,
       })
-      .eq("control_id", data.control_id)
+      .eq("control_id", validated.control_id)
       .in("mb", mbs);
 
     if (error) return { success: false, error: error.message } as ActionResult;
 
-    revalidatePath(`/aft/controles/${data.control_id}`);
+    revalidatePath(`/aft/controles/${validated.control_id}`);
     return { success: true, data: { synced: count || 0 } } as ActionResult;
   } catch (e) {
     return { success: false, error: (e as Error).message } as ActionResult;

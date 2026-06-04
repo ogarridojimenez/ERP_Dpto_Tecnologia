@@ -7,6 +7,7 @@ import {
   guardiaParteSchema,
   guardiaEntregaSchema,
   guardiaReciboSchema,
+  uuidSchema,
 } from "@/lib/schemas/aft";
 import type {
   GuardiaArea,
@@ -101,6 +102,7 @@ export async function createGuardiaArea(formData: FormData) {
 
 export async function updateGuardiaArea(id: string, formData: FormData) {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
@@ -113,7 +115,7 @@ export async function updateGuardiaArea(id: string, formData: FormData) {
     const { data, error } = await admin
       .from("guardia_areas")
       .update({ codigo: validated.codigo, nombre: validated.nombre, tipo: validated.tipo })
-      .eq("id", id)
+      .eq("id", validatedId)
       .select()
       .single();
 
@@ -127,13 +129,14 @@ export async function updateGuardiaArea(id: string, formData: FormData) {
 
 export async function deleteGuardiaArea(id: string) {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { count } = await admin
       .from("guardia_registros")
       .select("id", { count: "exact", head: true })
-      .eq("area_id", id);
+      .eq("area_id", validatedId);
 
     if (count && count > 0) {
       return { success: false, error: "No se puede eliminar un area con registros de guardia" };
@@ -142,7 +145,7 @@ export async function deleteGuardiaArea(id: string) {
     const { error } = await admin
       .from("guardia_areas")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", id);
+      .eq("id", validatedId);
 
     if (error) throw new Error(error.message);
     revalidatePath("/guardia/config");
@@ -183,13 +186,14 @@ export async function createGuardiaPeriferico(formData: FormData) {
 
 export async function deleteGuardiaPeriferico(id: string) {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.AFT_ADMIN);
     const admin = getAdminClient();
 
     const { error } = await admin
       .from("guardia_perifericos")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", id);
+      .eq("id", validatedId);
 
     if (error) throw new Error(error.message);
     revalidatePath("/guardia/config");
@@ -223,13 +227,14 @@ export async function getGuardiaPartes(): Promise<ActionResult> {
 
 export async function getGuardiaParte(id: string): Promise<ActionResult> {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireAuth();
     const admin = getAdminClient();
 
     const { data: parte, error: parteError } = await admin
       .from("guardia_partes")
       .select("*")
-      .eq("id", id)
+      .eq("id", validatedId)
       .single();
 
     if (parteError) throw new Error(parteError.message);
@@ -237,7 +242,7 @@ export async function getGuardiaParte(id: string): Promise<ActionResult> {
     const { data: registros } = await admin
       .from("guardia_registros")
       .select("*, area:guardia_areas(*)")
-      .eq("guardia_parte_id", id);
+      .eq("guardia_parte_id", validatedId);
 
     const registroIds = (registros || []).map((r) => r.id);
 
@@ -336,6 +341,7 @@ export async function createGuardiaParte(formData: FormData) {
 
 export async function saveEntrega(registroId: string, formData: FormData) {
   try {
+    const validatedRegistroId = uuidSchema.parse(registroId);
     const { user } = await requireRole(ROLES.GUARDIA_WRITE);
     const admin = getAdminClient();
 
@@ -343,7 +349,7 @@ export async function saveEntrega(registroId: string, formData: FormData) {
     const { data: registro } = await admin
       .from("guardia_registros")
       .select("entregado_por_user_id")
-      .eq("id", registroId)
+      .eq("id", validatedRegistroId)
       .single();
 
     if (registro?.entregado_por_user_id && registro.entregado_por_user_id !== user.id) {
@@ -376,7 +382,7 @@ export async function saveEntrega(registroId: string, formData: FormData) {
         fecha_hora_entrega: new Date().toISOString(),
         observaciones: validated.observaciones,
       })
-      .eq("id", registroId);
+      .eq("id", validatedRegistroId);
 
     if (regError) throw new Error(regError.message);
 
@@ -384,7 +390,7 @@ export async function saveEntrega(registroId: string, formData: FormData) {
       const { error: detError } = await admin
         .from("guardia_detalle")
         .upsert({
-          guardia_registro_id: registroId,
+          guardia_registro_id: validatedRegistroId,
           periferico_id: d.periferico_id,
           cantidad_entrega: d.cantidad,
           observaciones: d.observaciones,
@@ -406,6 +412,7 @@ export async function saveEntrega(registroId: string, formData: FormData) {
 
 export async function saveRecibo(registroId: string, formData: FormData) {
   try {
+    const validatedRegistroId = uuidSchema.parse(registroId);
     const { user } = await requireRole(ROLES.GUARDIA_WRITE);
     const admin = getAdminClient();
 
@@ -413,7 +420,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
     const { data: registro } = await admin
       .from("guardia_registros")
       .select("recibido_por_user_id")
-      .eq("id", registroId)
+      .eq("id", validatedRegistroId)
       .single();
 
     if (registro?.recibido_por_user_id && registro.recibido_por_user_id !== user.id) {
@@ -446,7 +453,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
         fecha_hora_recibo: new Date().toISOString(),
         observaciones: validated.observaciones,
       })
-      .eq("id", registroId);
+      .eq("id", validatedRegistroId);
 
     if (regError) throw new Error(regError.message);
 
@@ -454,7 +461,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
       const { error: detError } = await admin
         .from("guardia_detalle")
         .upsert({
-          guardia_registro_id: registroId,
+          guardia_registro_id: validatedRegistroId,
           periferico_id: d.periferico_id,
           cantidad_recibo: d.cantidad,
           observaciones: d.observaciones,
@@ -466,7 +473,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
     const { data: parteRegistro } = await admin
       .from("guardia_registros")
       .select("guardia_parte_id")
-      .eq("id", registroId)
+      .eq("id", validatedRegistroId)
       .single();
 
     const parteId = parteRegistro?.guardia_parte_id;
@@ -495,13 +502,14 @@ export async function saveRecibo(registroId: string, formData: FormData) {
 
 export async function completarGuardiaParte(parteId: string) {
   try {
+    const validatedId = uuidSchema.parse(parteId);
     await requireRole(ROLES.GUARDIA_DELETE);
     const admin = getAdminClient();
 
     const { data: registros } = await admin
       .from("guardia_registros")
       .select("id, fecha_hora_entrega, fecha_hora_recibo")
-      .eq("guardia_parte_id", parteId);
+      .eq("guardia_parte_id", validatedId);
 
     if (!registros || registros.length === 0) {
       return { success: false, error: "El parte no tiene areas registradas" };
@@ -518,11 +526,11 @@ export async function completarGuardiaParte(parteId: string) {
     const { error } = await admin
       .from("guardia_partes")
       .update({ estado })
-      .eq("id", parteId);
+      .eq("id", validatedId);
 
     if (error) throw new Error(error.message);
     revalidatePath("/guardia");
-    revalidatePath(`/guardia/${parteId}`);
+    revalidatePath(`/guardia/${validatedId}`);
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error desconocido" };
@@ -535,15 +543,16 @@ export async function completarGuardiaParte(parteId: string) {
 
 export async function deleteGuardiaParte(id: string) {
   try {
+    const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.GUARDIA_DELETE);
     const admin = getAdminClient();
 
     await admin.from("guardia_detalle").delete().in(
       "guardia_registro_id",
-      (await admin.from("guardia_registros").select("id").eq("guardia_parte_id", id)).data?.map((r) => r.id) || []
+      (await admin.from("guardia_registros").select("id").eq("guardia_parte_id", validatedId)).data?.map((r) => r.id) || []
     );
-    await admin.from("guardia_registros").delete().eq("guardia_parte_id", id);
-    const { error } = await admin.from("guardia_partes").delete().eq("id", id);
+    await admin.from("guardia_registros").delete().eq("guardia_parte_id", validatedId);
+    const { error } = await admin.from("guardia_partes").delete().eq("id", validatedId);
 
     if (error) throw new Error(error.message);
     revalidatePath("/guardia");

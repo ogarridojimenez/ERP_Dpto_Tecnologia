@@ -7,6 +7,7 @@ import {
   eliminarSessionSchema,
 } from "@/lib/schemas/aulas";
 import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
+import { uuidSchema } from "@/lib/schemas/aft";
 
 type ActionResult<T = unknown> = {
   success: boolean;
@@ -121,6 +122,7 @@ export async function obtenerSesiones() {
 
 export async function obtenerSession(sessionId: string) {
   try {
+    const validatedId = uuidSchema.parse(sessionId);
     await requireAuth();
     const admin = getAdminClient();
 
@@ -131,7 +133,7 @@ export async function obtenerSession(sessionId: string) {
         estado_general, observaciones_generales, created_at,
         locales!inner(codigo, nombre, tipo)
       `)
-      .eq("session_id", sessionId)
+      .eq("session_id", validatedId)
       .is("deleted_at", null)
       .order("locales(codigo)");
 
@@ -315,13 +317,14 @@ export async function eliminarSession(formData: FormData) {
 
 export async function toggleBloqueoLocal(localeId: string) {
   try {
+    const validatedId = uuidSchema.parse(localeId);
     await requireRole(ROLES.AULAS_ADMIN);
     const admin = getAdminClient();
 
     const { data: locale, error: lErr } = await admin
       .from("locales")
       .select("estado")
-      .eq("id", localeId)
+      .eq("id", validatedId)
       .single();
 
     if (lErr) return { success: false, error: lErr.message } as ActionResult;
@@ -331,7 +334,7 @@ export async function toggleBloqueoLocal(localeId: string) {
     const { error: uErr } = await admin
       .from("locales")
       .update({ estado: nuevoEstado })
-      .eq("id", localeId);
+      .eq("id", validatedId);
 
     if (uErr) return { success: false, error: uErr.message } as ActionResult;
 
@@ -398,10 +401,12 @@ export async function eliminarLocal(formData: FormData) {
     const localeId = formData.get("locale_id") as string;
     if (!localeId) return { success: false, error: "ID de local requerido" } as ActionResult;
 
+    const validatedId = uuidSchema.parse(localeId);
+
     const { error: dErr } = await admin
       .from("locales")
       .update({ deleted_at: new Date().toISOString() })
-      .eq("id", localeId);
+      .eq("id", validatedId);
 
     if (dErr) return { success: false, error: dErr.message } as ActionResult;
 

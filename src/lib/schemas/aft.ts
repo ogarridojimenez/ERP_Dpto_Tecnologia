@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export const uuidSchema = z.string().uuid("ID inválido");
+
+// ============================================================================
+// Schemas del modelo anterior (mantener para compatibilidad)
+// ============================================================================
+
 // Schemas del modelo anterior (mantener para compatibilidad)
 export const activoSchema = z.object({
   locale_id: z.string().min(1, "El local es obligatorio"),
@@ -110,3 +120,14 @@ export type GuardiaPerifericoForm = z.infer<typeof guardiaPerifericoSchema>;
 export type GuardiaParteForm = z.infer<typeof guardiaParteSchema>;
 export type GuardiaEntregaForm = z.infer<typeof guardiaEntregaSchema>;
 export type GuardiaReciboForm = z.infer<typeof guardiaReciboSchema>;
+
+// ============================================================================
+// SYNC DESDE APP MÓVIL
+// ============================================================================
+
+export const syncScansSchema = z.object({
+  control_id: uuidSchema,
+  scans: z.array(z.string().min(1)).max(1000, "Demasiados escaneos (max 1000)"),
+});
+
+export type SyncScansForm = z.infer<typeof syncScansSchema>;
