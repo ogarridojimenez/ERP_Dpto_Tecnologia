@@ -164,7 +164,7 @@ export default function LandingPage() {
               </div>
             </div>
             <p className="text-center text-xs text-gray-400">
-              © 2026 Facultad de Ciberseguridad — Universidad de La Habana
+               © 2026 Facultad de Ciberseguridad — Universidad de las Ciencias Informáticas
             </p>
           </div>
         </div>

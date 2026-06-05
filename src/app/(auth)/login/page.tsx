@@ -147,7 +147,7 @@ export default function LoginPage() {
 
         {/* Footer text */}
         <p className="mt-6 text-center text-xs text-gray-400">
-          Universidad de La Habana © 2026
+          Universidad de las Ciencias Informáticas © 2026
         </p>
       </div>
     </div>
