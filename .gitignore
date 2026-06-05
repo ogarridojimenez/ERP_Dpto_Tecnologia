@@ -33,6 +33,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+/dev-server.log
 
 # env files (can opt-in for committing if needed)
 .env
@@ -46,5 +47,28 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# scripts debug/inspección de raíz (desarrollo, no producción)
+/inspect-*.js
+/run-*.js
+/seed-*.js
+/test-e2e.js
+/check-*.js
+/read-excel*.js
+/generate-icon.js
+/reset-passwords.js
+/deploy-copyright.txt
+
+# playwright MCP (snapshots y logs de esta sesión)
+/.playwright-mcp/
+
+# screenshots raíz (capturas manuales, no parte del repo)
+/*.png
+
+# Expo / React Native build artifacts
+apps/mobile/android/app/src/main/assets/
+apps/mobile/android/app/src/main/res/drawable-hdpi/
+apps/mobile/android/app/src/main/res/drawable-mdpi/
+apps/mobile/android/app/src/main/res/drawable-xhdpi/
+apps/mobile/android/app/src/main/res/drawable-xxhdpi/
+apps/mobile/android/app/src/main/res/drawable-xxxhdpi/
 
