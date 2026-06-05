@@ -8,7 +8,7 @@ test.describe("Autenticacion", () => {
     await page.goto("/login");
     await page.getByLabel("Correo electrónico").fill("admin@sitrade.uci.cu");
     await page.getByLabel("Contraseña").fill("password-equivocada");
-    await page.getByRole("button", { name: /entrar/i }).click();
+    await page.getByRole("button", { name: /iniciar sesi[oó]n/i }).click();
     await expect(page.getByText(/credenciales|invalid|incorrect/i).first()).toBeVisible({ timeout: 10_000 });
     await expect(page).toHaveURL(/\/login/);
   });

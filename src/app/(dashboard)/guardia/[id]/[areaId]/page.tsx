@@ -113,7 +113,6 @@ export default function GuardiaAreaDetailPage() {
 
     const result = await saveEntrega(registro.id, formData);
     if (result.success) {
-      router.refresh();
       const updated = await getGuardiaParte(parteId);
       if (updated.success) {
         setParte(updated.data);
@@ -271,6 +270,7 @@ export default function GuardiaAreaDetailPage() {
 
               {canEditEntrega || !tieneEntrega ? (
                 <button
+                  data-testid="btn-guardar-entrega"
                   onClick={handleSaveEntrega}
                   disabled={saving || !entNombre || !entSolapin}
                   className="w-full rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50"
@@ -358,6 +358,7 @@ export default function GuardiaAreaDetailPage() {
 
               {canEditRecibo || !tieneRecibo ? (
                 <button
+                  data-testid="btn-guardar-recibo"
                   onClick={handleSaveRecibo}
                   disabled={saving || !recNombre || !recSolapin}
                   className="w-full rounded-xl bg-green-600 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-green-700 active:scale-95 disabled:opacity-50"

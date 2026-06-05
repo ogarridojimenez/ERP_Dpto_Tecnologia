@@ -4,81 +4,89 @@ import { login } from "./helpers/auth";
 const SUPABASE_URL = "https://bbznwxreyqswhgtdihxe.supabase.co";
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-async function deleteParteByFecha(fecha: string) {
-  const ctx = await playwrightRequest.newContext({
-    extraHTTPHeaders: {
-      apikey: SERVICE_KEY,
-      Authorization: `Bearer ${SERVICE_KEY}`,
-    },
-  });
-  const r = await ctx.get(
-    `${SUPABASE_URL}/rest/v1/guardia_partes?fecha=eq.${fecha}&select=id`
-  );
-  const partes = (await r.json()) as any[];
-  if (!Array.isArray(partes) || partes.length === 0) {
-    await ctx.dispose();
-    return;
-  }
-  for (const p of partes) {
-    const regs = (await (await ctx.get(`${SUPABASE_URL}/rest/v1/guardia_registros?guardia_parte_id=eq.${p.id}&select=id`)).json()) as any[];
-    if (regs.length > 0) {
-      const ids = regs.map((x) => x.id).join(",");
-      await ctx.delete(`${SUPABASE_URL}/rest/v1/guardia_detalle?guardia_registro_id=in.(${ids})`);
-    }
-    await ctx.delete(`${SUPABASE_URL}/rest/v1/guardia_registros?guardia_parte_id=eq.${p.id}`);
-    await ctx.delete(`${SUPABASE_URL}/rest/v1/guardia_partes?id=eq.${p.id}`);
-  }
-  await ctx.dispose();
-}
-
 const ENTREGADOR = "Tecnico Entrega E2E";
 const RECEPTOR = "Tecnico Recibo E2E";
 const SOL_E = "SOL-E-E2E";
 const SOL_R = "SOL-R-E2E";
+const OBS_E2E = "Parte de prueba E2E";
 
-// Fecha de un solo uso que no debe existir
-const FECHA_E2E = "2030-06-15";
+let sharedParteId = "";
+let consoleErrors: string[] = [];
+
+async function apiGet(path: string) {
+  const ctx = await playwrightRequest.newContext({
+    extraHTTPHeaders: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
+  });
+  const r = await ctx.get(`${SUPABASE_URL}/rest/v1/${path}`);
+  const data = await r.json();
+  await ctx.dispose();
+  return data as any[];
+}
+
+async function apiDelete(path: string) {
+  const ctx = await playwrightRequest.newContext({
+    extraHTTPHeaders: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` },
+  });
+  await ctx.delete(`${SUPABASE_URL}/rest/v1/${path}`);
+  await ctx.dispose();
+}
+
+async function deleteAllE2EDetails() {
+  const partes = await apiGet(
+    `guardia_partes?select=id&observaciones_generales=eq.${encodeURIComponent(OBS_E2E)}`
+  );
+  for (const p of partes || []) {
+    const regs = await apiGet(`guardia_registros?select=id&guardia_parte_id=eq.${p.id}`);
+    if (Array.isArray(regs) && regs.length > 0) {
+      const ids = regs.map((r: any) => r.id).join(",");
+      await apiDelete(`guardia_detalle?guardia_registro_id=in.(${ids})`);
+    }
+    await apiDelete(`guardia_registros?guardia_parte_id=eq.${p.id}`);
+    await apiDelete(`guardia_partes?id=eq.${p.id}`);
+  }
+}
 
 test.describe.serial("Guardia - Flujo Entrega-Recibo", () => {
   test.beforeAll(async () => {
-    if (!SERVICE_KEY) {
-      throw new Error("SUPABASE_SERVICE_ROLE_KEY no definida en env");
-    }
-    await deleteParteByFecha(FECHA_E2E);
+    if (!SERVICE_KEY) throw new Error("SUPABASE_SERVICE_ROLE_KEY no definida en env");
+    await deleteAllE2EDetails();
   });
 
   test("tecnicoE crea parte, llena 5 entregas", async ({ page }) => {
+    consoleErrors = [];
+    page.on("console", (msg) => {
+      if (msg.type() === "error") consoleErrors.push(msg.text());
+    });
+    page.on("pageerror", (err) => consoleErrors.push(err.message));
+
     await login(page, "tecnicoE");
 
     await page.goto("/guardia");
     await page.getByRole("link", { name: /nuevo parte/i }).click();
     await page.waitForURL("**/guardia/nueva");
 
-    await page.locator('input[type="date"]').fill(FECHA_E2E);
-    await page.getByPlaceholder("Observaciones generales del parte (opcional)").fill("Parte de prueba E2E");
+    await page.locator('input[type="date"]').fill("2030-06-15");
+    await page.getByPlaceholder("Observaciones generales del parte (opcional)").fill(OBS_E2E);
     await page.getByRole("button", { name: /crear parte/i }).click();
     await page.waitForURL("**/guardia", { timeout: 15_000 });
 
-    // Buscar el link al parte recien creado (por fecha formateada es-CU)
-    const link = page.locator("a").filter({ hasText: /(14|15) de junio de 2030/ }).first();
-    await link.click();
-    await page.waitForURL(/\/guardia\/[0-9a-f-]+$/);
+    const partes = await apiGet(
+      `guardia_partes?select=id&observaciones_generales=eq.${encodeURIComponent(OBS_E2E)}&order=created_at.desc&limit=1`
+    );
+    sharedParteId = partes?.[0]?.id;
+    expect(sharedParteId).toBeTruthy();
+
+    await page.goto(`/guardia/${sharedParteId}`);
     await expect(page.getByText(/parte de guardia/i).first()).toBeVisible();
 
-    // Llenar entrega en cada area
     for (let i = 0; i < 5; i++) {
-      await page.goto("/guardia");
-      await page.locator("a").filter({ hasText: /(14|15) de junio de 2030/ }).first().click();
-      await page.waitForURL(/\/guardia\/[0-9a-f-]+$/);
+      await page.goto(`/guardia/${sharedParteId}`);
       await page.waitForLoadState("networkidle");
 
-      await page.getByRole("link", { name: /llenar entrega|ver \/ editar/i }).first().click();
+      const entregaLink = page.getByRole("link", { name: /llenar entrega/i }).first();
+      if (await entregaLink.count() === 0) break;
+      await entregaLink.click();
       await page.waitForURL(/\/guardia\/[0-9a-f-]+\/[0-9a-f-]+$/);
-      // Esperar hidratacion completa (el toast "Rendering..." desaparece)
-      await page.waitForFunction(
-        () => !document.body.textContent?.includes("Rendering"),
-        { timeout: 10_000 }
-      );
 
       const entTab = page.getByRole("button", { name: /^Entrega/ });
       await entTab.click();
@@ -95,32 +103,43 @@ test.describe.serial("Guardia - Flujo Entrega-Recibo", () => {
         await numberInputs.nth(j).fill("5");
       }
 
-      const saveBtn = page.getByRole("button", { name: /guardar entrega/i });
+      const saveBtn = page.getByTestId("btn-guardar-entrega");
       await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
       await saveBtn.click();
-      // Tras guardar, router.refresh() rerenderiza la pagina
-      await page.waitForFunction(
-        () => !document.body.textContent?.includes("Rendering"),
-        { timeout: 15_000 }
-      );
+
+      // Wait for either: Recibo tab becomes enabled OR save error
+      await expect(async () => {
+        const reciboBtn = page.getByRole("button", { name: /^Recibo/ });
+        const isDisabled = await reciboBtn.isDisabled();
+        expect(isDisabled).toBe(false);
+      }).toPass({ timeout: 15_000 });
+
+      // Log any console errors
+      const errors = consoleErrors.filter(e => e.includes("saveEntrega"));
+      if (errors.length > 0) {
+        console.log(`[Area ${i + 1}] saveEntrega errors:`, errors);
+      }
     }
+
+    const regs = await apiGet(
+      `guardia_registros?select=fecha_hora_entrega,entregado_por_nombre&guardia_parte_id=eq.${sharedParteId}`
+    );
+    const withEntrega = regs.filter((r: any) => r.fecha_hora_entrega);
+    expect(withEntrega.length).toBe(5);
   });
 
   test("tecnicoR llena los 5 recibos con cantidades identicas", async ({ page }) => {
     await login(page, "tecnicoR");
+    expect(sharedParteId).toBeTruthy();
 
     for (let i = 0; i < 5; i++) {
-      await page.goto("/guardia");
-      await page.locator("a").filter({ hasText: /(14|15) de junio de 2030/ }).first().click();
-      await page.waitForURL(/\/guardia\/[0-9a-f-]+$/);
+      await page.goto(`/guardia/${sharedParteId}`);
       await page.waitForLoadState("networkidle");
 
-      await page.getByRole("link", { name: /llenar recibo|ver \/ editar/i }).first().click();
+      const reciboLink = page.getByRole("link", { name: /llenar recibo/i }).first();
+      if (await reciboLink.count() === 0) break;
+      await reciboLink.click();
       await page.waitForURL(/\/guardia\/[0-9a-f-]+\/[0-9a-f-]+$/);
-      await page.waitForFunction(
-        () => !document.body.textContent?.includes("Rendering"),
-        { timeout: 10_000 }
-      );
 
       const reciboBtn = page.getByRole("button", { name: /^Recibo/ });
       await reciboBtn.click();
@@ -137,14 +156,10 @@ test.describe.serial("Guardia - Flujo Entrega-Recibo", () => {
         await numberInputs.nth(j).fill("5");
       }
 
-      const saveBtn = page.getByRole("button", { name: /guardar recibo/i });
+      const saveBtn = page.getByTestId("btn-guardar-recibo");
       await expect(saveBtn).toBeEnabled({ timeout: 10_000 });
       await saveBtn.click();
       await page.waitForURL(/\/guardia\/[0-9a-f-]+$/, { timeout: 15_000 });
-      await page.waitForFunction(
-        () => !document.body.textContent?.includes("Rendering"),
-        { timeout: 15_000 }
-      );
     }
 
     await expect(page.getByText(/completado/i).first()).toBeVisible({ timeout: 10_000 });
