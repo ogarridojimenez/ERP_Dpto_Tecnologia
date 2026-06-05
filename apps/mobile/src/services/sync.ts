@@ -5,7 +5,7 @@ const BATCH_SIZE = 50;
 
 const SYNC_URL =
   process.env.EXPO_PUBLIC_SYNC_URL ||
-  "https://erp-dpto-technology.vercel.app/api/aft/sync";
+  "https://sitrade.vercel.app/api/aft/sync";
 
 export type SyncProgress = {
   current: number;
