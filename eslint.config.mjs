@@ -12,6 +12,21 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // SITRADE project ignores:
+    "node_modules/**",
+    "playwright-report/**",
+    "test-results/**",
+    "tests/**",
+    "scripts/**",
+    "inspect-*.js",
+    "run-*.js",
+    "seed-*.js",
+    "test-e2e.js",
+    "check-*.js",
+    "read-excel*.js",
+    "generate-icon.js",
+    "reset-passwords.js",
+    "apps/mobile/**",
   ]),
 ]);
 
