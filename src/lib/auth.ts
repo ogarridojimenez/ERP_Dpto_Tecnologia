@@ -3,7 +3,6 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 import type { ProfileRole } from "@/types/database";
 
 type SupabaseUser = Awaited<ReturnType<typeof createClient>>;
-type AdminClient = ReturnType<typeof createAdminClient>;
 
 export class AuthError extends Error {
   constructor(message: string) {

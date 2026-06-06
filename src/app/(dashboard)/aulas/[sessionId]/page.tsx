@@ -83,6 +83,7 @@ export default function SessionPanelPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
   }, [params.sessionId]);
 

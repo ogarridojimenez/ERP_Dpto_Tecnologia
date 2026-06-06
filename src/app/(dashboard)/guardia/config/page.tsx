@@ -26,15 +26,15 @@ export default function GuardiaConfigPage() {
   const [newPerifNombre, setNewPerifNombre] = useState("");
   const [newPerifOrden, setNewPerifOrden] = useState(0);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
   const loadData = async () => {
     const result = await getGuardiaAreas();
     if (result.success) setAreas((result.data as any[]) || []);
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const handleCreateArea = async () => {
     if (!newAreaCodigo || !newAreaNombre) return;
@@ -109,12 +109,12 @@ export default function GuardiaConfigPage() {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-black text-gray-800">Configuracion de Guardia</h1>
         <button
           onClick={() => setShowNewArea(true)}
-          className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blue-700 active:scale-95"
+          className="self-start rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blue-700 active:scale-95 sm:self-auto"
         >
           + Nueva Area
         </button>
@@ -124,7 +124,7 @@ export default function GuardiaConfigPage() {
       {showNewArea && (
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 space-y-4">
           <h3 className="font-bold text-blue-800">Nueva Area</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <input
               type="text"
               placeholder="Codigo (ej: LAB-201)"
@@ -163,14 +163,14 @@ export default function GuardiaConfigPage() {
       <div className="space-y-4">
         {areas.map((area) => (
           <div key={area.id} className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-6 py-4">
+            <div className="flex flex-col gap-3 border-b border-gray-100 bg-gray-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               {editAreaId === area.id ? (
-                <div className="flex items-center gap-2 flex-1">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-1">
                   <input
                     type="text"
                     value={editCodigo}
                     onChange={(e) => setEditCodigo(e.target.value)}
-                    className="w-24 rounded-lg border border-gray-300 px-2 py-1 text-sm"
+                    className="w-full sm:w-24 rounded-lg border border-gray-300 px-2 py-1 text-sm"
                   />
                   <input
                     type="text"
@@ -186,23 +186,25 @@ export default function GuardiaConfigPage() {
                     <option value="laboratorio">Laboratorio</option>
                     <option value="oficina">Oficina</option>
                   </select>
-                  <button onClick={() => handleUpdateArea(area.id)} className="rounded-lg bg-green-600 px-3 py-1 text-xs font-bold text-white hover:bg-green-700">
-                    Guardar
-                  </button>
-                  <button onClick={() => setEditAreaId(null)} className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-bold text-gray-600 hover:bg-gray-50">
-                    Cancelar
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleUpdateArea(area.id)} className="rounded-lg bg-green-600 px-3 py-1 text-xs font-bold text-white hover:bg-green-700">
+                      Guardar
+                    </button>
+                    <button onClick={() => setEditAreaId(null)} className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-bold text-gray-600 hover:bg-gray-50">
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{area.tipo === "oficina" ? "🏢" : "🔬"}</span>
-                    <div>
-                      <p className="font-bold text-gray-900">{area.nombre}</p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="text-2xl shrink-0">{area.tipo === "oficina" ? "🏢" : "🔬"}</span>
+                    <div className="min-w-0">
+                      <p className="font-bold text-gray-900 truncate">{area.nombre}</p>
                       <p className="text-xs text-gray-500">{area.codigo} • {area.tipo} • {area.perifericos?.length || 0} perifericos</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 sm:shrink-0">
                     <button
                       onClick={() => {
                         setEditAreaId(area.id);
@@ -238,7 +240,7 @@ export default function GuardiaConfigPage() {
               </div>
 
               {showNewPeriferico === area.id && (
-                <div className="flex items-center gap-2 mb-3 p-3 bg-blue-50 rounded-xl">
+                <div className="flex flex-col gap-2 mb-3 p-3 bg-blue-50 rounded-xl sm:flex-row sm:items-center">
                   <input
                     type="text"
                     placeholder="Nombre del periferico"
@@ -251,20 +253,22 @@ export default function GuardiaConfigPage() {
                     placeholder="Orden"
                     value={newPerifOrden}
                     onChange={(e) => setNewPerifOrden(parseInt(e.target.value) || 0)}
-                    className="w-20 rounded-lg border border-gray-300 px-3 py-1 text-sm"
+                    className="w-full sm:w-20 rounded-lg border border-gray-300 px-3 py-1 text-sm"
                   />
-                  <button
-                    onClick={() => handleCreatePeriferico(area.id)}
-                    className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-bold text-white hover:bg-blue-700"
-                  >
-                    Agregar
-                  </button>
-                  <button
-                    onClick={() => setShowNewPeriferico(null)}
-                    className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-bold text-gray-600 hover:bg-gray-50"
-                  >
-                    Cancelar
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCreatePeriferico(area.id)}
+                      className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-bold text-white hover:bg-blue-700"
+                    >
+                      Agregar
+                    </button>
+                    <button
+                      onClick={() => setShowNewPeriferico(null)}
+                      className="rounded-lg border border-gray-300 px-3 py-1 text-xs font-bold text-gray-600 hover:bg-gray-50"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
                 </div>
               )}
 
