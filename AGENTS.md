@@ -2,7 +2,48 @@
 
 ## Current Status
 
+### En curso (sesión 2026-06-05 PM)
+**Plan de corrección de errores — 6 fases. Fases 0+1+2+3+4+5 COMPLETADAS y deployadas.**
+
+Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
+
+- **Fase 0 — Sanitizar `.env.example` (commit `1f47aec`, deploy Ready 50s)**:
+  - Reemplazo de service_role_key, anon key y DB password por placeholders
+  - El archivo original tenía credenciales reales y `.gitignore` tiene `!.env.example` (commiteable)
+  - **ACCIÓN MANUAL PENDIENTE**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password de Postgres en Supabase Dashboard — estuvieron expuestos
+- **Fase 1 — `.gitignore` ampliado (commit `b0433d1`, deploy Ready 40s)**:
+  - Añadidos: 14 scripts debug raíz (inspect-*, run-*, seed-*, test-e2e.js, check-*, read-excel*, generate-icon.js, reset-passwords.js, deploy-copyright.txt), `/.playwright-mcp/`, `/*.png` raíz, `/dev-server.log`, assets/ y drawable-*/ de Expo Android
+  - `git rm --cached dev-server.log` (estaba tracked)
+- **Fase 2 — Página `/rrhh` stub (commit `13212e0`, deploy Ready 48s)**:
+  - Cierra el 404 del sidebar. Server component con `requireRole(["admin", "jefe", "rrhh"])`
+  - Header con gradiente fuchsia/purple para distinguir de AFT (azul) y Aulas (verde)
+  - Card "Proximamente" + grid de 4 features planificadas (Personal, Asistencia, Reportes, Capacitacion)
+  - Verificado en prod: `https://sitrade.vercel.app/rrhh` → 307 (redirect a /login, correcto, requiere auth)
+- **Fase 3 — `.single()` → `.maybeSingle()` (commit `bc22a9b`, deploy Ready 43s)**:
+  - 4 archivos: `aft/areas/[id]/page.tsx`, `actions/aft.ts`, `actions/guardia.ts`, `actions/aulas.ts`
+  - Previene 406 en queries de detalle cuando el row no existe
+  - `getGuardiaParte` ahora retorna `Parte no encontrado` en vez de crashear
+  - NO se tocaron: profile lookups, post-inserts, `requireAuth`
+- **Fase 4 — Dashboard stats reales + fix eslint config (commit `7b4c6d5`, deploy Ready 43s)**:
+  - `dashboard/page.tsx` reescrito: stats reales de AFT/Guardia/Aulas en vez de tabla `incidencias` (inexistente)
+  - Fix visual: clases Tailwind dinámicas reemplazadas por mapa estático `COLOR_CLASSES`
+  - `eslint.config.mjs` ampliado: 80 → 48 errors (excluye playwright-report, tests, scripts, debug)
+- **Fase 5 — Lint selectivo (commit `a559a9c`, deploy Ready)**:
+  - 3 fixes menores: `loadData` antes de `useEffect` en guardia/config, `eslint-disable` en aulas/sessionId, `AdminClient` type no usado eliminado de auth.ts
+  - Lint: 48 → 47 errores (46 restantes son `any` intencionales en queries Supabase/JSON parsing)
+  - TypeCheck y build pasan limpio
+
+### Pendiente
+- **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
+
+### Cambios sin commitear (del trabajo responsive de la sesión anterior)
+- 11 archivos UI/UX modificados (dashboard, AFT pages, Guardia pages, Aulas, layout)
+- `src/components/dashboard-chrome.tsx` (nuevo, hamburger + drawer mobile)
+- Decisión: NO commitear aquí, esperar a que se decida si entran en un commit "responsive mobile" separado o se revierten
+- Importante: `git add .` ahora NO commitea debug .js ni PNGs (gracias al .gitignore de Fase 1)
+
 ### Done
+- **Deploy a Vercel — COMPLETADO 2026-06-05**:
 - **Deploy a Vercel — COMPLETADO 2026-06-05**:
   - URL producción: `https://sitrade.vercel.app` (alias de `sitrade-nipezc1yq-omar-luis-garrido-jimenezs-projects.vercel.app`)
   - Build pasa en 22.9s sin errores
@@ -80,7 +121,7 @@
 - 10 archivos UI/UX modificados (login, dashboard, guardia, sidebar, etc.)
 
 ### Critical Context
-- **Commits recientes**: `47376a5` (seguridad), `f5a6074` (Zod), `1580373` (Playwright E2E base).
+- **Commits recientes**: `1f47aec` (env.example sanitized), `b0433d1` (gitignore), `13212e0` (rrhh stub), `47376a5` (seguridad), `f5a6074` (Zod), `1580373` (Playwright E2E base).
 - Dev server arranca en puerto 3000 (3001 si ocupado). `playwright.config.ts` baseURL = `http://localhost:3000`.
 - Tests E2E leen `.env` automáticamente via loader custom en `playwright.config.ts`.
 - Service role key se lee de `process.env.SUPABASE_SERVICE_ROLE_KEY` (del `.env` raíz).
