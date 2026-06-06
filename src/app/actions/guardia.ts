@@ -235,9 +235,10 @@ export async function getGuardiaParte(id: string): Promise<ActionResult> {
       .from("guardia_partes")
       .select("*")
       .eq("id", validatedId)
-      .single();
+      .maybeSingle();
 
     if (parteError) throw new Error(parteError.message);
+    if (!parte) throw new Error("Parte no encontrado");
 
     const { data: registros } = await admin
       .from("guardia_registros")
@@ -294,7 +295,7 @@ export async function createGuardiaParte(formData: FormData) {
       .eq("organization_id", profile.organization_id)
       .eq("fecha", validated.fecha)
       .is("deleted_at", null)
-      .single();
+      .maybeSingle();
 
     if (existe) {
       return { success: false, error: "Ya existe un parte para esta fecha" };
@@ -350,7 +351,11 @@ export async function saveEntrega(registroId: string, formData: FormData) {
       .from("guardia_registros")
       .select("entregado_por_user_id")
       .eq("id", validatedRegistroId)
-      .single();
+      .maybeSingle();
+
+    if (!registro) {
+      return { success: false, error: "Registro de guardia no encontrado" };
+    }
 
     if (registro?.entregado_por_user_id && registro.entregado_por_user_id !== user.id) {
       const { data: profile } = await admin
@@ -421,7 +426,11 @@ export async function saveRecibo(registroId: string, formData: FormData) {
       .from("guardia_registros")
       .select("recibido_por_user_id")
       .eq("id", validatedRegistroId)
-      .single();
+      .maybeSingle();
+
+    if (!registro) {
+      return { success: false, error: "Registro de guardia no encontrado" };
+    }
 
     if (registro?.recibido_por_user_id && registro.recibido_por_user_id !== user.id) {
       const { data: profile } = await admin
@@ -474,7 +483,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
       .from("guardia_registros")
       .select("guardia_parte_id")
       .eq("id", validatedRegistroId)
-      .single();
+      .maybeSingle();
 
     const parteId = parteRegistro?.guardia_parte_id;
 

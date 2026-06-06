@@ -325,9 +325,10 @@ export async function toggleBloqueoLocal(localeId: string) {
       .from("locales")
       .select("estado")
       .eq("id", validatedId)
-      .single();
+      .maybeSingle();
 
     if (lErr) return { success: false, error: lErr.message } as ActionResult;
+    if (!locale) return { success: false, error: "Local no encontrado" } as ActionResult;
 
     const nuevoEstado = locale.estado === "inactivo" ? "activo" : "inactivo";
 

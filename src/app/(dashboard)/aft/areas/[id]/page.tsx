@@ -37,10 +37,12 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
         .select("*")
         .eq("id", id)
         .is("deleted_at", null)
-        .single();
+        .maybeSingle();
 
       if (areaErr) {
         console.error("Error cargando área:", areaErr);
+      } else if (!areaData) {
+        console.warn("Área no encontrada o eliminada:", id);
       }
 
       if (areaData) {
@@ -88,7 +90,7 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
       setEditing(false);
       // Refetch
       const supabase = createClient();
-      const { data: areaData } = await supabase.from("areas_aft").select("*").eq("id", id).single();
+      const { data: areaData } = await supabase.from("areas_aft").select("*").eq("id", id).maybeSingle();
       if (areaData) setArea(areaData);
     } else {
       alert(res.error);
@@ -115,19 +117,19 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ADMIN_ROLES}>
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-3">
           <div>
             <Link href="/aft/areas" className="text-xs text-blue-600 hover:text-blue-800">← Volver a Áreas</Link>
-            <h1 className="text-3xl font-black text-gray-900 mt-1">
+            <h1 className="mt-1 text-2xl font-black text-gray-900 md:text-3xl">
               <span className="font-mono text-blue-700">{area.codigo}</span> - {area.nombre}
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="mt-1 text-sm text-gray-500">
               {mbs.length} MBs registrados · Creada el {formatDate(area.created_at)}
             </p>
           </div>
-          <div className="flex gap-2 flex-wrap justify-end">
+          <div className="flex flex-wrap gap-2">
             {mbs.length > 0 && (
               <QrsPdfButton
                 areaCodigo={area.codigo}
@@ -221,8 +223,8 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
               <p className="text-sm mt-1">Sube el Excel del área para empezar.</p>
             </div>
           ) : (
-            <div className="max-h-96 overflow-y-auto">
-              <table className="w-full text-left text-sm">
+            <div className="max-h-96 overflow-auto">
+              <table className="w-full min-w-[480px] text-left text-sm">
                 <thead className="bg-gray-50 text-gray-600 font-bold sticky top-0">
                   <tr>
                     <th className="px-4 py-3">#</th>

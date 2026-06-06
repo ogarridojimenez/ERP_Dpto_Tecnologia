@@ -380,7 +380,7 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
       .from("controles_aft")
       .select("id, area_id, fecha_planificada, fecha_realizada, estado, areas_aft(codigo, nombre)")
       .eq("id", validatedId)
-      .single();
+      .maybeSingle();
 
     if (cErr || !control) {
       return { success: false, error: cErr?.message || "Control no encontrado" };
