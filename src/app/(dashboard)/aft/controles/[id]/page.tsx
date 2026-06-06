@@ -87,16 +87,16 @@ export default function ControlDetallePage({ params }: { params: Promise<{ id: s
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ALLOWED_ROLES}>
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="space-y-6 max-w-6xl mx-auto">
         {/* Header */}
         <div>
           <Link href="/aft" className="text-xs text-blue-600 hover:text-blue-800">← Volver al Dashboard</Link>
-          <div className="flex items-start justify-between mt-1">
+          <div className="mt-1 flex flex-col gap-3">
             <div>
-              <h1 className="text-3xl font-black text-gray-900">
+              <h1 className="text-2xl font-black text-gray-900 md:text-3xl">
                 <span className="font-mono text-blue-700">{control.area_codigo}</span> - {control.area_nombre}
               </h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-gray-500">
                 Planificado: {formatDate(control.fecha_planificada)} ·
                 {control.fecha_realizada && ` Realizado: ${formatDate(control.fecha_realizada)} ·`}
                 {" "}
@@ -106,7 +106,7 @@ export default function ControlDetallePage({ params }: { params: Promise<{ id: s
               </p>
             </div>
             {isAdminOrJefe && !isCompleted && !isCancelled && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={handleComplete}
                   className="rounded-xl bg-green-600 px-4 py-2 text-sm font-bold text-white hover:bg-green-700"

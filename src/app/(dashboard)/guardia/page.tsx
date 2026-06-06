@@ -46,12 +46,12 @@ export default function GuardiaPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-8 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white shadow-lg md:p-8">
         <div className="relative z-10">
-          <h1 className="text-3xl font-black tracking-tight">Guardia - Partes Diarios</h1>
-          <p className="mt-2 text-blue-100 opacity-80">Control de entrega y recibo de perifericos por area</p>
+          <h1 className="text-2xl font-black tracking-tight md:text-3xl">Guardia - Partes Diarios</h1>
+          <p className="mt-2 text-sm text-blue-100 opacity-80 md:text-base">Control de entrega y recibo de perifericos por area</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/guardia/nueva" className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-700 transition-all hover:bg-blue-50 active:scale-95">
               Nuevo Parte
@@ -85,11 +85,11 @@ export default function GuardiaPage() {
             {partes.map((p) => {
               const ec = ESTADO_COLORS[p.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.borrador;
               return (
-                <div key={p.id} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-                  <Link href={`/guardia/${p.id}`} className="flex-1">
+                <div key={p.id} className="flex flex-col gap-3 p-4 hover:bg-gray-50 transition-colors sm:flex-row sm:items-center sm:justify-between">
+                  <Link href={`/guardia/${p.id}`} className="min-w-0 flex-1">
                     <div className="flex items-center gap-3">
-                      <div className="text-2xl">📋</div>
-                      <div>
+                      <div className="text-2xl shrink-0">📋</div>
+                      <div className="min-w-0">
                         <p className="font-bold text-gray-900">{formatDate(p.fecha)}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
                           Creado: {new Date(p.created_at).toLocaleDateString("es-DO")}
@@ -97,7 +97,7 @@ export default function GuardiaPage() {
                       </div>
                     </div>
                   </Link>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 sm:shrink-0">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold border ${ec.bg} ${ec.text} ${ec.border}`}>
                       {ec.label}
                     </span>

@@ -91,13 +91,13 @@ export default function AreasPage() {
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ADMIN_ROLES}>
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Áreas de Responsabilidad</h1>
           <p className="text-sm text-gray-500">Catálogo manual de áreas auditables</p>
         </div>
-        <Link href="/aft/areas/nueva" className="rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800">
+        <Link href="/aft/areas/nueva" className="self-start rounded-xl bg-blue-700 px-4 py-2 text-sm font-bold text-white hover:bg-blue-800 sm:self-auto">
           ➕ Nueva Área
         </Link>
       </div>
@@ -124,57 +124,59 @@ export default function AreasPage() {
             )}
           </div>
         ) : (
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3">Código</th>
-                <th className="px-4 py-3">Nombre</th>
-                <th className="px-4 py-3 text-center">MBs</th>
-                <th className="px-4 py-3 text-center">Estado</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filtered.map((a) => {
-                const mbCount = (a as any).mb_area?.[0]?.count || 0;
-                return (
-                  <tr key={a.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-mono font-bold text-blue-700">{a.codigo}</td>
-                    <td className="px-4 py-3 font-bold text-gray-900">{a.nombre}</td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${mbCount > 0 ? "bg-green-50 text-green-700" : "bg-orange-50 text-orange-700"}`}>
-                        {mbCount} MBs
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs font-bold ${a.activo ? "bg-blue-50 text-blue-700" : "bg-gray-100 text-gray-500"}`}>
-                        {a.activo ? "Activa" : "Inactiva"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/aft/areas/${a.id}`} className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">
-                          Ver
-                        </Link>
-                        <button
-                          onClick={() => setEditing({ id: a.id, codigo: a.codigo, nombre: a.nombre, activo: a.activo })}
-                          className="rounded-lg bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700 hover:bg-amber-100"
-                        >
-                          ✏️ Editar
-                        </button>
-                        <button
-                          onClick={() => handleDelete(a.id, a.codigo, mbCount)}
-                          className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3">Código</th>
+                  <th className="px-4 py-3">Nombre</th>
+                  <th className="px-4 py-3 text-center">MBs</th>
+                  <th className="px-4 py-3 text-center">Estado</th>
+                  <th className="px-4 py-3 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filtered.map((a) => {
+                  const mbCount = (a as any).mb_area?.[0]?.count || 0;
+                  return (
+                    <tr key={a.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-mono font-bold text-blue-700">{a.codigo}</td>
+                      <td className="px-4 py-3 font-bold text-gray-900">{a.nombre}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${mbCount > 0 ? "bg-green-50 text-green-700" : "bg-orange-50 text-orange-700"}`}>
+                          {mbCount} MBs
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${a.activo ? "bg-blue-50 text-blue-700" : "bg-gray-100 text-gray-500"}`}>
+                          {a.activo ? "Activa" : "Inactiva"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex flex-wrap justify-end gap-2">
+                          <Link href={`/aft/areas/${a.id}`} className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                            Ver
+                          </Link>
+                          <button
+                            onClick={() => setEditing({ id: a.id, codigo: a.codigo, nombre: a.nombre, activo: a.activo })}
+                            className="rounded-lg bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700 hover:bg-amber-100"
+                          >
+                            ✏️ Editar
+                          </button>
+                          <button
+                            onClick={() => handleDelete(a.id, a.codigo, mbCount)}
+                            className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 

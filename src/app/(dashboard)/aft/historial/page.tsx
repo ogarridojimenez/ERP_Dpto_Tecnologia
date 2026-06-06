@@ -82,13 +82,13 @@ export default function HistorialPage() {
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ALLOWED_ROLES}>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black text-gray-900">Historial de Controles</h1>
             <p className="text-sm text-gray-500">Todos los controles realizados y en curso</p>
           </div>
-          <Link href="/aft" className="text-sm text-blue-600 hover:text-blue-800">← Volver</Link>
+          <Link href="/aft" className="self-start text-sm text-blue-600 hover:text-blue-800 sm:self-auto">← Volver</Link>
         </div>
 
         {/* Filtros */}
@@ -135,57 +135,59 @@ export default function HistorialPage() {
           </div>
         ) : (
           <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200">
-                <tr>
-                  <th className="px-4 py-3">Fecha Plan.</th>
-                  <th className="px-4 py-3">Área</th>
-                  <th className="px-4 py-3 text-center">MBs</th>
-                  <th className="px-4 py-3 text-center">Estado</th>
-                  <th className="px-4 py-3 text-right">Acción</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filtered.map((c) => {
-                  const ec = ESTADO_COLORS[c.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.planificado;
-                  const area = (c as any).areas_aft;
-                  const mbCount = (c as any).activos_aft?.[0]?.count || 0;
-                  return (
-                    <tr key={c.id} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-gray-700">
-                        <div className="font-bold">{formatDate(c.fecha_planificada)}</div>
-                        {c.fecha_realizada && (
-                          <div className="text-xs text-gray-400">Realizado: {formatDate(c.fecha_realizada)}</div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="font-mono text-xs font-bold text-blue-700">{area?.codigo || "?"}</div>
-                        <div className="text-xs text-gray-600">{area?.nombre || "?"}</div>
-                      </td>
-                      <td className="px-4 py-3 text-center text-gray-600">{mbCount}</td>
-                      <td className="px-4 py-3 text-center">
-                        <span className={`px-2 py-1 rounded-full text-xs font-bold border ${ec.bg} ${ec.text} ${ec.border}`}>
-                          {ec.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex justify-end gap-2">
-                          <Link href={`/aft/controles/${c.id}`} className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">
-                            Ver
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(c.id, area?.codigo || "?", c.estado)}
-                            className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead className="bg-gray-50 text-gray-600 font-bold border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3">Fecha Plan.</th>
+                    <th className="px-4 py-3">Área</th>
+                    <th className="px-4 py-3 text-center">MBs</th>
+                    <th className="px-4 py-3 text-center">Estado</th>
+                    <th className="px-4 py-3 text-right">Acción</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filtered.map((c) => {
+                    const ec = ESTADO_COLORS[c.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.planificado;
+                    const area = (c as any).areas_aft;
+                    const mbCount = (c as any).activos_aft?.[0]?.count || 0;
+                    return (
+                      <tr key={c.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-gray-700">
+                          <div className="font-bold">{formatDate(c.fecha_planificada)}</div>
+                          {c.fecha_realizada && (
+                            <div className="text-xs text-gray-400">Realizado: {formatDate(c.fecha_realizada)}</div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="font-mono text-xs font-bold text-blue-700">{area?.codigo || "?"}</div>
+                          <div className="text-xs text-gray-600">{area?.nombre || "?"}</div>
+                        </td>
+                        <td className="px-4 py-3 text-center text-gray-600">{mbCount}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold border ${ec.bg} ${ec.text} ${ec.border}`}>
+                            {ec.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex flex-wrap justify-end gap-2">
+                            <Link href={`/aft/controles/${c.id}`} className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                              Ver
+                            </Link>
+                            <button
+                              onClick={() => handleDelete(c.id, area?.codigo || "?", c.estado)}
+                              className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

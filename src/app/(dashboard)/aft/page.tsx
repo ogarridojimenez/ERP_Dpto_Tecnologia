@@ -77,10 +77,10 @@ export default function AftPage() {
     <RoleGuard userRole={userRole} allowedRoles={AFT_ALLOWED_ROLES}>
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-8 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white shadow-lg md:p-8">
         <div className="relative z-10">
-          <h1 className="text-3xl font-black tracking-tight">Activos Fijos Tangibles</h1>
-          <p className="mt-2 text-blue-100 opacity-80">Control de inventario por Áreas de Responsabilidad</p>
+          <h1 className="text-2xl font-black tracking-tight md:text-3xl">Activos Fijos Tangibles</h1>
+          <p className="mt-2 text-sm text-blue-100 opacity-80 md:text-base">Control de inventario por Áreas de Responsabilidad</p>
           
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/aft/areas" className="rounded-xl bg-white px-4 py-2 text-sm font-bold text-blue-700 transition-all hover:bg-blue-50 active:scale-95">

@@ -60,22 +60,22 @@ export default function GuardiaPartePage() {
   const allRecibido = parte.registros?.every((r: any) => r.fecha_hora_recibo) ?? false;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-8 text-white shadow-lg">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-800 p-6 text-white shadow-lg md:p-8">
         <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-2">
-            <Link href="/guardia" className="text-blue-200 hover:text-white transition-colors">
+          <div className="mb-2 flex flex-wrap items-center gap-2 md:gap-3">
+            <Link href="/guardia" className="text-sm text-blue-200 hover:text-white transition-colors">
               ← Volver
             </Link>
             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${ec.bg} ${ec.text} ${ec.border}`}>
               {ec.label}
             </span>
           </div>
-          <h1 className="text-3xl font-black tracking-tight">Parte de Guardia</h1>
-          <p className="mt-2 text-blue-100 opacity-80">{formatDate(parte.fecha)}</p>
+          <h1 className="text-2xl font-black tracking-tight md:text-3xl">Parte de Guardia</h1>
+          <p className="mt-2 text-sm text-blue-100 opacity-80 md:text-base">{formatDate(parte.fecha)}</p>
           {parte.observaciones_generales && (
-            <p className="mt-2 text-blue-200 text-sm">{parte.observaciones_generales}</p>
+            <p className="mt-2 text-sm text-blue-200">{parte.observaciones_generales}</p>
           )}
         </div>
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
@@ -107,17 +107,17 @@ export default function GuardiaPartePage() {
 
           return (
             <div key={registro.id} className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">
+              <div className="flex flex-col gap-3 border-b border-gray-100 bg-gray-50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="text-2xl shrink-0">
                     {area?.tipo === "oficina" ? "🏢" : "🔬"}
                   </div>
-                  <div>
-                    <p className="font-bold text-gray-900">{area?.nombre || "Area desconocida"}</p>
+                  <div className="min-w-0">
+                    <p className="font-bold text-gray-900 truncate">{area?.nombre || "Area desconocida"}</p>
                     <p className="text-xs text-gray-500">{area?.codigo}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
                   {tieneDiscrepancias && (
                     <span className="px-3 py-1 rounded-full text-xs font-bold border bg-red-50 text-red-700 border-red-300">
                       Discrepancia
@@ -150,8 +150,8 @@ export default function GuardiaPartePage() {
                 )}
 
                 {registro.detalles && registro.detalles.length > 0 && (
-                  <div className="mt-3">
-                    <table className="w-full text-sm">
+                  <div className="mt-3 -mx-4 overflow-x-auto">
+                    <table className="w-full min-w-[400px] text-sm">
                       <thead>
                         <tr className="text-left text-gray-500 border-b border-gray-100">
                           <th className="pb-2 font-bold">Periferico</th>
