@@ -36,11 +36,12 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
 
-### Cambios sin commitear (del trabajo responsive de la sesión anterior)
-- 11 archivos UI/UX modificados (dashboard, AFT pages, Guardia pages, Aulas, layout)
-- `src/components/dashboard-chrome.tsx` (nuevo, hamburger + drawer mobile)
-- Decisión: NO commitear aquí, esperar a que se decida si entran en un commit "responsive mobile" separado o se revierten
-- Importante: `git add .` ahora NO commitea debug .js ni PNGs (gracias al .gitignore de Fase 1)
+### Cambios responsive mobile (commit `0d61a15`)
+- **9 archivos** commiteados como `feat: responsive mobile` (commit `0d61a15`, deploy Ready)
+- Nuevo `src/components/dashboard-chrome.tsx`: sidebar colapsable en mobile con hamburger menu
+- Layout reemplaza `Sidebar` por `DashboardChrome`
+- AFT areas/controles/historial: ajustes responsive (grid, table overflow)
+- Guardia y Aulas: ajustes de espaciado y layout mobile
 
 ### Done
 - **Deploy a Vercel — COMPLETADO 2026-06-05**:
