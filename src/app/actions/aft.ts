@@ -465,13 +465,4 @@ export async function syncScans(data: {
   }
 }
 
-// ============================================================================
-// MANTENER ACCIONES DEL MODELO ANTERIOR (para no romper imports)
-// ============================================================================
 
-export async function createActivo() { return { success: false, error: "Deprecated" }; }
-export async function updateActivo() { return { success: false, error: "Deprecated" }; }
-export async function deleteActivo() { return { success: false, error: "Deprecated" }; }
-export async function moveActivo() { return { success: false, error: "Deprecated" }; }
-export async function runReconciliation() { return { success: false, error: "Use getReconciliation instead" }; }
-export async function syncInventoryScans() { return { success: false, error: "Use syncScans instead" }; }
