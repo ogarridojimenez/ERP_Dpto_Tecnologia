@@ -35,6 +35,8 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
 
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
+- **Sync móvil↔web**: probar `EXPO_PUBLIC_SYNC_URL` con Expo
+- **RRHH**: desarrollar módulo (stub listo en `/rrhh`)
 
 ### Cambios responsive mobile (commit `0d61a15`)
 - **9 archivos** commiteados como `feat: responsive mobile` (commit `0d61a15`, deploy Ready)
