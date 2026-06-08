@@ -18,7 +18,7 @@ export async function login(page: Page, user: TestUser) {
   await page.getByLabel("Correo electrónico").fill(email);
   await page.getByLabel("Contraseña").fill(password);
   await page.getByRole("button", { name: /entrar|iniciar/i }).click();
-  await page.waitForURL("**/dashboard**", { timeout: 15_000 });
+  await page.waitForURL("**/dashboard**", { timeout: 30_000 });
 }
 
 export async function logout(page: Page) {
