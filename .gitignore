@@ -35,6 +35,12 @@ yarn-error.log*
 .pnpm-debug.log*
 /dev-server.log
 
+# baseline logs (Fase 0 — locales, no parte del repo)
+/.baseline-*.log
+
+# claude code (local agent state)
+/.claude/
+
 # env files (can opt-in for committing if needed)
 .env
 .env*.local
