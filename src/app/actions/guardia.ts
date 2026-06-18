@@ -391,15 +391,17 @@ export async function saveEntrega(registroId: string, formData: FormData) {
 
     if (regError) throw new Error(regError.message);
 
-    for (const d of validated.detalles) {
+    if (validated.detalles.length > 0) {
+      const detallesPayload = validated.detalles.map((d) => ({
+        guardia_registro_id: validatedRegistroId,
+        periferico_id: d.periferico_id,
+        cantidad_entrega: d.cantidad,
+        observaciones: d.observaciones,
+      }));
+
       const { error: detError } = await admin
         .from("guardia_detalle")
-        .upsert({
-          guardia_registro_id: validatedRegistroId,
-          periferico_id: d.periferico_id,
-          cantidad_entrega: d.cantidad,
-          observaciones: d.observaciones,
-        }, { onConflict: "guardia_registro_id,periferico_id" });
+        .upsert(detallesPayload, { onConflict: "guardia_registro_id,periferico_id" });
 
       if (detError) throw new Error(detError.message);
     }
@@ -424,7 +426,7 @@ export async function saveRecibo(registroId: string, formData: FormData) {
     // Verificar que el usuario sea el dueno o admin/jefe
     const { data: registro } = await admin
       .from("guardia_registros")
-      .select("recibido_por_user_id")
+      .select("recibido_por_user_id, guardia_parte_id")
       .eq("id", validatedRegistroId)
       .maybeSingle();
 
@@ -466,26 +468,22 @@ export async function saveRecibo(registroId: string, formData: FormData) {
 
     if (regError) throw new Error(regError.message);
 
-    for (const d of validated.detalles) {
+    if (validated.detalles.length > 0) {
+      const detallesPayload = validated.detalles.map((d) => ({
+        guardia_registro_id: validatedRegistroId,
+        periferico_id: d.periferico_id,
+        cantidad_recibo: d.cantidad,
+        observaciones: d.observaciones,
+      }));
+
       const { error: detError } = await admin
         .from("guardia_detalle")
-        .upsert({
-          guardia_registro_id: validatedRegistroId,
-          periferico_id: d.periferico_id,
-          cantidad_recibo: d.cantidad,
-          observaciones: d.observaciones,
-        }, { onConflict: "guardia_registro_id,periferico_id" });
+        .upsert(detallesPayload, { onConflict: "guardia_registro_id,periferico_id" });
 
       if (detError) throw new Error(detError.message);
     }
 
-    const { data: parteRegistro } = await admin
-      .from("guardia_registros")
-      .select("guardia_parte_id")
-      .eq("id", validatedRegistroId)
-      .maybeSingle();
-
-    const parteId = parteRegistro?.guardia_parte_id;
+    const parteId = registro.guardia_parte_id;
 
     const { data: registros } = await admin
       .from("guardia_registros")
