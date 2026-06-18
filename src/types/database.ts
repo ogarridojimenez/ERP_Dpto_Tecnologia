@@ -4,30 +4,7 @@ export type ProfileRole = "admin" | "jefe" | "rrhh" | "tecnico" | "especialista_
 export type LocaleTipo = "aula" | "laboratorio" | "oficina" | "almacen" | "otro";
 export type GuardiaEstado = "pendiente_entrega" | "pendiente_recibo" | "completado" | "con_discrepancias";
 export type GuardiaTurno = "matutino" | "vespertino";
-export type IncidenciaTipo = "rotura" | "perdida" | "mal_funcionamiento" | "otro";
-export type ActivoTipo = 'computadora' | 'monitor' | 'teclado' | 'mouse' | 'ups' | 'tv' | 'datachow' | 'televiewer' | 'proyector' | 'impresora' | 'camara' | 'telefono' | 'mueble' | 'otro';
-export type ActivoEstado = "nuevo" | "bueno" | "regular" | "malo" | "baja_propuesta" | "dado_de_baja";
 export type ControlEstado = 'planificado' | 'en_curso' | 'completado' | 'cancelado';
-
-export interface Activo {
-  id: string;
-  organization_id: string | null;
-  locale_id: string;
-  tipo: ActivoTipo;
-  numero_medio_basico: string;
-  marca: string | null;
-  modelo: string | null;
-  numero_serie: string | null;
-  estado: ActivoEstado;
-  fecha_adquisicion: string | null;
-  ultimo_control_date: string | null;
-  tiene_qr: boolean;
-  observaciones: string | null;
-  user_id: string | null;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-}
 
 // ============================================================================
 // AFT v2 — Rediseño basado en Áreas de Responsabilidad
@@ -79,20 +56,6 @@ export interface ControlAft {
   deleted_at: string | null;
 }
 
-export interface DetalleControl {
-  id: string;
-  control_id: string;
-  activo_id: string;
-  presente: boolean;
-  estado_observado: 'nuevo' | 'bueno' | 'regular' | 'malo' | null;
-  observaciones: string | null;
-  user_id: string | null;
-  created_at: string;
-  updated_at: string;
-  deleted_at: string | null;
-}
-
-
 export interface Locale {
   id: string;
   codigo: string;
@@ -117,39 +80,6 @@ export interface Guardia {
   recibido_por: string | null;
   estado: GuardiaEstado;
   observaciones_generales: string | null;
-  created_at: string;
-  user_id: string;
-}
-
-export interface ObservacionGuardia {
-  id: string;
-  guardia_id: string;
-  locale_id: string;
-  tipo: "entrega" | "recibo";
-  pc_encendidas: number | null;
-  pc_estado: string | null;
-  pc_observaciones: string | null;
-  perifericos_estado: string | null;
-  cables_red_conteo: number | null;
-  cables_red_estado: string | null;
-  cables_corriente_conteo: number | null;
-  cables_corriente_estado: string | null;
-  estado_general: "bien" | "regular" | "mal";
-  observaciones: string | null;
-  created_at: string;
-  user_id: string;
-}
-
-export interface Incidencia {
-  id: string;
-  guardia_id: string | null;
-  locale_id: string;
-  tipo: IncidenciaTipo;
-  descripcion: string;
-  urgente: boolean;
-  resuelta: boolean;
-  fecha_solucion: string | null;
-  solucion: string | null;
   created_at: string;
   user_id: string;
 }
