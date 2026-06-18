@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
 import * as xlsx from "xlsx";
 
 export async function POST(req: NextRequest) {
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (e) {
-    console.error("Upload error:", e);
+    logger.error("Upload error:", e);
     return NextResponse.json({ error: "Error interno al procesar el archivo" }, { status: 500 });
   }
 }

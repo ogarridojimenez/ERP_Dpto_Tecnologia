@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { deleteArea, updateArea } from "@/app/actions/aft";
 import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
+import { logger } from "@/lib/logger";
 
 const AFT_ADMIN_ROLES: ProfileRole[] = ["admin", "jefe"];
 
@@ -28,7 +29,7 @@ export default function AreasPage() {
       .order("codigo");
 
     if (error) {
-      console.error("Error cargando áreas:", error);
+      logger.error("Error cargando áreas:", error);
     } else if (data) {
       setAreas(data);
     }

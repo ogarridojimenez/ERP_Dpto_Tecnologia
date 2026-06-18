@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { jsPDF } from "jspdf";
 import QRCode from "qrcode";
+import { logger } from "@/lib/logger";
 
 export interface QrMb {
   mb: string;
@@ -104,7 +105,7 @@ export function QrsPdfButton({ areaCodigo, areaNombre, mbs, className }: QrsPdfB
       setProgress(`✅ ${mbs.length} QRs exportados.`);
       setTimeout(() => setProgress(""), 4000);
     } catch (err) {
-      console.error("Error generando PDF:", err);
+      logger.error("Error generando PDF:", err);
       setProgress(`❌ ${(err as Error).message}`);
     } finally {
       setGenerating(false);

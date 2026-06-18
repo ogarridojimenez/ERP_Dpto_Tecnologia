@@ -8,6 +8,7 @@ import { uploadAreaExcel, updateArea, deleteArea } from "@/app/actions/aft";
 import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 import { QrsPdfButton } from "@/components/aft/QrsPdfButton";
 
 const AFT_ADMIN_ROLES: ProfileRole[] = ["admin", "jefe"];
@@ -40,9 +41,9 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
         .maybeSingle();
 
       if (areaErr) {
-        console.error("Error cargando área:", areaErr);
+        logger.error("Error cargando área:", areaErr);
       } else if (!areaData) {
-        console.warn("Área no encontrada o eliminada:", id);
+        logger.warn("Área no encontrada o eliminada:", id);
       }
 
       if (areaData) {
@@ -52,7 +53,7 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
           .select("*")
           .eq("area_id", id)
           .order("mb");
-        if (mbErr) console.error("Error cargando MBs:", mbErr);
+        if (mbErr) logger.error("Error cargando MBs:", mbErr);
         if (mbData) setMbs(mbData);
       }
 
