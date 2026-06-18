@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { jsPDF } from "jspdf";
-import QRCode from "qrcode";
+import type { jsPDF as JsPDFType } from "jspdf";
 import { logger } from "@/lib/logger";
 
 export interface QrMb {
@@ -40,6 +39,11 @@ export function QrsPdfButton({ areaCodigo, areaNombre, mbs, className }: QrsPdfB
     setGenerating(true);
     setProgress(`Generando QRs (0/${mbs.length})...`);
     try {
+      const [{ jsPDF }, qrcodeModule] = await Promise.all([
+        import("jspdf"),
+        import("qrcode"),
+      ]);
+      const QRCode = qrcodeModule.default;
       const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
@@ -131,7 +135,7 @@ export function QrsPdfButton({ areaCodigo, areaNombre, mbs, className }: QrsPdfB
 }
 
 function drawHeader(
-  doc: jsPDF,
+  doc: JsPDFType,
   pageW: number,
   title: string,
   totalMbs: number,
