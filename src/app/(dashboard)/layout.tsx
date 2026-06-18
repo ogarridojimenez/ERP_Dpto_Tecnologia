@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import { SupabaseProvider } from "@/components/providers/supabase-provider";
 import { DashboardChrome } from "@/components/dashboard-chrome";
 
@@ -10,6 +11,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SupabaseProvider>
+      <Toaster position="top-right" richColors closeButton />
       <DashboardChrome>{children}</DashboardChrome>
     </SupabaseProvider>
   );
