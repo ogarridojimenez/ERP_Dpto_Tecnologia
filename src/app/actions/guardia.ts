@@ -231,39 +231,29 @@ export async function getGuardiaParte(id: string): Promise<ActionResult> {
     await requireAuth();
     const admin = getAdminClient();
 
-    const { data: parte, error: parteError } = await admin
-      .from("guardia_partes")
-      .select("*")
-      .eq("id", validatedId)
-      .maybeSingle();
+    // 2 round-trips en paralelo en lugar de 3 secuenciales.
+    // - parte por separado: mantiene la sintaxis simple.
+    // - registros con area + detalles + periferico anidados en una sola query.
+    const [parteRes, registrosRes] = await Promise.all([
+      admin
+        .from("guardia_partes")
+        .select("*")
+        .eq("id", validatedId)
+        .maybeSingle(),
+      admin
+        .from("guardia_registros")
+        .select("*, area:guardia_areas(*), detalles:guardia_detalle(*, periferico:guardia_perifericos(*))")
+        .eq("guardia_parte_id", validatedId),
+    ]);
 
-    if (parteError) throw new Error(parteError.message);
-    if (!parte) throw new Error("Parte no encontrado");
+    if (parteRes.error) throw new Error(parteRes.error.message);
+    if (!parteRes.data) throw new Error("Parte no encontrado");
 
-    const { data: registros } = await admin
-      .from("guardia_registros")
-      .select("*, area:guardia_areas(*)")
-      .eq("guardia_parte_id", validatedId);
-
-    const registroIds = (registros || []).map((r) => r.id);
-
-    let detalles: any[] = [];
-    if (registroIds.length > 0) {
-      const { data: d } = await admin
-        .from("guardia_detalle")
-        .select("*, periferico:guardia_perifericos(*)")
-        .in("guardia_registro_id", registroIds);
-      detalles = d || [];
-    }
-
-    const registrosConDetalles = (registros || []).map((r) => ({
-      ...r,
-      detalles: detalles.filter((d) => d.guardia_registro_id === r.id),
-    }));
+    const registros = registrosRes.data ?? [];
 
     return {
       success: true,
-      data: { ...parte, registros: registrosConDetalles },
+      data: { ...parteRes.data, registros },
     };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : "Error desconocido" };
