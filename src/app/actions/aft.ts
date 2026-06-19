@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { areaAftSchema, controlAftSchema, uuidSchema, syncScansSchema } from "@/lib/schemas/aft";
-import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
+import { requireAuth, requireRole, ROLES } from "@/lib/auth";
 import { createClient as createUserClient } from "@/lib/supabase/server";
 
 type ActionResult<T = unknown> = {
@@ -18,7 +18,7 @@ type ActionResult<T = unknown> = {
 export async function createArea(formData: FormData) {
   try {
     const { user } = await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { data: profile } = await admin.from("profiles").select("organization_id").eq("id", user.id).single();
     if (!profile?.organization_id) {
@@ -58,7 +58,7 @@ export async function createArea(formData: FormData) {
 export async function updateArea(id: string, formData: FormData) {
   try {
     await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const validated = areaAftSchema.parse({
       codigo: formData.get("codigo") as string,
@@ -85,7 +85,7 @@ export async function deleteArea(id: string) {
   try {
     const validatedId = uuidSchema.parse(id);
     await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { data: controles } = await admin
       .from("controles_aft")
@@ -119,7 +119,7 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
   try {
     const validatedId = uuidSchema.parse(areaId);
     const { user } = await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const file = formData.get("file") as File;
     if (!file) {
@@ -208,7 +208,7 @@ export async function uploadAreaExcel(areaId: string, formData: FormData) {
 export async function createControl(formData: FormData) {
   try {
     const { user } = await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { data: profile } = await admin.from("profiles").select("organization_id").eq("id", user.id).single();
     if (!profile?.organization_id) {
@@ -283,7 +283,7 @@ export async function completeControl(controlId: string) {
   try {
     const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { error } = await admin
       .from("controles_aft")
@@ -308,7 +308,7 @@ export async function cancelControl(controlId: string) {
   try {
     const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { error } = await admin
       .from("controles_aft")
@@ -329,7 +329,7 @@ export async function deleteControl(controlId: string) {
   try {
     const validatedId = uuidSchema.parse(controlId);
     await requireRole(ROLES.AFT_ADMIN);
-    const admin = getAdminClient();
+    const admin = await createUserClient();
 
     const { error } = await admin
       .from("controles_aft")
@@ -441,8 +441,12 @@ export async function syncScans(data: {
 }) {
   try {
     const validated = syncScansSchema.parse(data);
-    const { user } = await requireAuth();
-    const admin = getAdminClient();
+    // syncScans actualiza activos_aft. La RLS UPDATE permite
+    // admin/jefe/tecnico. Validamos explicitamente para devolver un
+    // error legible si un rol no autorizado lo invoca (en lugar de
+    // success: true synced: 0 por filas rechazadas por RLS).
+    const { user } = await requireRole(["admin", "jefe", "tecnico"]);
+    const admin = await createUserClient();
 
     if (!validated.scans || validated.scans.length === 0) {
       return { success: true, data: { synced: 0 } } as ActionResult;
