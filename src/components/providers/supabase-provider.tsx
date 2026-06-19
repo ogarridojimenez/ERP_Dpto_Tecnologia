@@ -21,37 +21,37 @@ export function SupabaseProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-      if (user) {
-        supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) setRole(data.role as ProfileRole);
-          });
-      }
-      setLoading(false);
-    });
+    // onAuthStateChange dispara INITIAL_SESSION al montar con la sesion
+    // existente, asi que cubre tanto el primer render como cambios futuros.
+    // Evitamos el SELECT a profiles duplicado del antiguo patron getUser
+    // + onAuthStateChange.
+    let lastUserId: string | null = null;
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        supabase
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const nextUser = session?.user ?? null;
+      setUser(nextUser);
+
+      if (!nextUser) {
+        setRole(null);
+        lastUserId = null;
+        setLoading(false);
+        return;
+      }
+
+      // Solo refetch del profile si cambia el usuario (no en cada refresh
+      // de token), ahorra round-trips.
+      if (nextUser.id !== lastUserId) {
+        lastUserId = nextUser.id;
+        const { data } = await supabase
           .from("profiles")
           .select("role")
-          .eq("id", session.user.id)
-          .single()
-          .then(({ data }) => {
-            if (data) setRole(data.role as ProfileRole);
-          });
-      } else {
-        setRole(null);
+          .eq("id", nextUser.id)
+          .single();
+        if (data) setRole(data.role as ProfileRole);
       }
+      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
