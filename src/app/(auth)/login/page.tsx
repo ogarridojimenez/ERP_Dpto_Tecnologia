@@ -1,40 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { Building2, ArrowLeft, Mail, Lock } from "lucide-react";
+import { loginAction, type LoginState } from "./actions";
 
 export const dynamic = "force-dynamic";
 
+const initialState: LoginState = { error: null };
+
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = createClient();
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
-
-    router.push("/dashboard");
-    router.refresh();
-  }
+  const [state, formAction, isPending] = useActionState(loginAction, initialState);
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4">
@@ -81,7 +57,7 @@ export default function LoginPage() {
               Inicia sesión para acceder al sistema
             </p>
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form action={formAction} className="space-y-4">
               <div>
                 <label htmlFor="email" className="mb-1.5 block text-sm font-bold text-gray-700">
                   Correo electrónico
@@ -90,10 +66,9 @@ export default function LoginPage() {
                   <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     autoComplete="email"
                     className="w-full rounded-xl border border-gray-300 py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                     placeholder="usuario@uci.cu"
@@ -109,10 +84,9 @@ export default function LoginPage() {
                   <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                   <input
                     id="password"
+                    name="password"
                     type="password"
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     autoComplete="current-password"
                     className="w-full rounded-xl border border-gray-300 py-2.5 pl-10 pr-4 text-sm transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                     placeholder="••••••••"
@@ -120,18 +94,18 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {error && (
+              {state.error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-                  {error}
+                  {state.error}
                 </div>
               )}
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isPending}
                 className="w-full rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none"
               >
-                {loading ? (
+                {isPending ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
