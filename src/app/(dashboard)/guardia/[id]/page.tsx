@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { getGuardiaParte, completarGuardiaParte } from "@/app/actions/guardia";
 import { formatDate } from "@/lib/utils";
+import { toast } from "sonner";
 
 const ESTADO_COLORS = {
   borrador: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-300", label: "Borrador" },
@@ -36,8 +37,9 @@ export default function GuardiaPartePage() {
     if (result.success) {
       const updated = await getGuardiaParte(parteId);
       if (updated.success) setParte(updated.data);
+      toast.success("Parte completado");
     } else {
-      alert(result.error || "Error al completar");
+      toast.error(result.error || "Error al completar");
     }
     setCompletando(false);
   };

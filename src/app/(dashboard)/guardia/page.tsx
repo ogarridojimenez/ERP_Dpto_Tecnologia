@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
 import { deleteGuardiaParte } from "@/app/actions/guardia";
+import { toast } from "sonner";
 
 const ESTADO_COLORS = {
   borrador: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-300", label: "Borrador" },
@@ -36,8 +37,9 @@ export default function GuardiaPage() {
     const result = await deleteGuardiaParte(id);
     if (result.success) {
       setPartes((prev) => prev.filter((p) => p.id !== id));
+      toast.success("Parte eliminado");
     } else {
-      alert(result.error || "Error al eliminar");
+      toast.error(result.error || "Error al eliminar");
     }
   };
 

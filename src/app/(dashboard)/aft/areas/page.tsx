@@ -8,6 +8,7 @@ import { deleteArea, updateArea } from "@/app/actions/aft";
 import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 const AFT_ADMIN_ROLES: ProfileRole[] = ["admin", "jefe"];
 
@@ -61,8 +62,9 @@ export default function AreasPage() {
     const res = await deleteArea(id);
     if (res.success) {
       setAreas(areas.filter(a => a.id !== id));
+      toast.success("Área eliminada");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al eliminar");
     }
   };
 
@@ -76,8 +78,9 @@ export default function AreasPage() {
     if (res.success) {
       setEditing(null);
       await loadAreas();
+      toast.success("Área actualizada");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al actualizar");
     }
   };
 

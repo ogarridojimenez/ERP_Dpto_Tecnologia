@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { jsPDF as JsPDFType } from "jspdf";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 export interface QrMb {
   mb: string;
@@ -33,7 +34,7 @@ export function QrsPdfButton({ areaCodigo, areaNombre, mbs, className }: QrsPdfB
 
   const handleGenerate = async () => {
     if (mbs.length === 0) {
-      alert("Esta área no tiene MBs cargados.");
+      toast.warning("Esta área no tiene MBs cargados.");
       return;
     }
     setGenerating(true);

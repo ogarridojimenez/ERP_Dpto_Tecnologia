@@ -7,6 +7,7 @@ import { deleteControl } from "@/app/actions/aft";
 import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
+import { toast } from "sonner";
 
 const AFT_ALLOWED_ROLES: ProfileRole[] = ["admin", "jefe"];
 
@@ -55,7 +56,7 @@ export default function HistorialPage() {
     if (res.success) {
       setControles(controles.filter(c => c.id !== id));
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al eliminar");
     }
   };
 

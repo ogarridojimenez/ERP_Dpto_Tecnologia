@@ -10,6 +10,7 @@ import {
   deleteGuardiaPeriferico,
   getGuardiaAreas,
 } from "@/app/actions/guardia";
+import { toast } from "sonner";
 
 export default function GuardiaConfigPage() {
   const [areas, setAreas] = useState<any[]>([]);
@@ -49,8 +50,9 @@ export default function GuardiaConfigPage() {
       setNewAreaNombre("");
       setNewAreaTipo("laboratorio");
       loadData();
+      toast.success("Área creada");
     } else {
-      alert((result as any).error || "Error al crear area");
+      toast.error((result as any).error || "Error al crear area");
     }
   };
 
@@ -63,8 +65,9 @@ export default function GuardiaConfigPage() {
     if (result.success) {
       setEditAreaId(null);
       loadData();
+      toast.success("Área actualizada");
     } else {
-      alert(result.error || "Error al actualizar");
+      toast.error(result.error || "Error al actualizar");
     }
   };
 
@@ -73,8 +76,9 @@ export default function GuardiaConfigPage() {
     const result = await deleteGuardiaArea(id);
     if (result.success) {
       loadData();
+      toast.success("Área eliminada");
     } else {
-      alert(result.error || "Error al eliminar");
+      toast.error(result.error || "Error al eliminar");
     }
   };
 
@@ -90,8 +94,9 @@ export default function GuardiaConfigPage() {
       setNewPerifNombre("");
       setNewPerifOrden(0);
       loadData();
+      toast.success("Periférico creado");
     } else {
-      alert(result.error || "Error al crear periferico");
+      toast.error(result.error || "Error al crear periferico");
     }
   };
 
@@ -99,8 +104,9 @@ export default function GuardiaConfigPage() {
     const result = await deleteGuardiaPeriferico(id);
     if (result.success) {
       loadData();
+      toast.success("Periférico eliminado");
     } else {
-      alert(result.error || "Error al eliminar");
+      toast.error(result.error || "Error al eliminar");
     }
   };
 

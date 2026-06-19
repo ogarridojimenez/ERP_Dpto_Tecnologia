@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import { toggleBloqueoLocal, crearLocal, eliminarLocal } from "@/app/actions/aulas";
+import { toast } from "sonner";
 
 type LocaleRow = {
   id: string;
@@ -243,8 +244,12 @@ export default function SessionPanelPage() {
                         const fd = new FormData();
                         fd.set("locale_id", locale.id);
                         const res = await eliminarLocal(fd);
-                        if (res.success) loadData();
-                        else alert(res.error ?? "Error al eliminar");
+                        if (res.success) {
+                          loadData();
+                          toast.success("Local eliminado");
+                        } else {
+                          toast.error(res.error ?? "Error al eliminar");
+                        }
                       }}
                       className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white text-[10px] shadow-sm opacity-0 transition-all hover:bg-red-50 group-hover:opacity-100"
                       title="Eliminar local"

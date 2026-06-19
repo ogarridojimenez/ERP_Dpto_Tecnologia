@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { getGuardiaParte, saveEntrega, saveRecibo } from "@/app/actions/guardia";
+import { toast } from "sonner";
 
 export default function GuardiaAreaDetailPage() {
   const params = useParams();
@@ -120,8 +121,9 @@ export default function GuardiaAreaDetailPage() {
         setRegistro(reg);
         setMode("recibo");
       }
+      toast.success("Entrega guardada");
     } else {
-      alert(result.error || "Error al guardar");
+      toast.error(result.error || "Error al guardar");
     }
     setSaving(false);
   };
@@ -145,8 +147,9 @@ export default function GuardiaAreaDetailPage() {
     const result = await saveRecibo(registro.id, formData);
     if (result.success) {
       router.push(`/guardia/${parteId}`);
+      toast.success("Recibo guardado");
     } else {
-      alert(result.error || "Error al guardar");
+      toast.error(result.error || "Error al guardar");
     }
     setSaving(false);
   };

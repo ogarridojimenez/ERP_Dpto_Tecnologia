@@ -2,6 +2,7 @@
 
 import { eliminarSession } from "@/app/actions/aulas";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function DeleteSessionButton({ sessionId }: { sessionId: string }) {
   const router = useRouter();
@@ -13,8 +14,9 @@ export function DeleteSessionButton({ sessionId }: { sessionId: string }) {
     const res = await eliminarSession(fd);
     if (res.success) {
       router.refresh();
+      toast.success("Sesión eliminada");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al eliminar");
     }
   }
 

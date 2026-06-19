@@ -9,6 +9,7 @@ import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 import { QrsPdfButton } from "@/components/aft/QrsPdfButton";
 
 const AFT_ADMIN_ROLES: ProfileRole[] = ["admin", "jefe"];
@@ -93,8 +94,9 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
       const supabase = createClient();
       const { data: areaData } = await supabase.from("areas_aft").select("*").eq("id", id).maybeSingle();
       if (areaData) setArea(areaData);
+      toast.success("Área actualizada");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al actualizar");
     }
   };
 
@@ -104,7 +106,7 @@ export default function AreaDetallePage({ params }: { params: Promise<{ id: stri
     if (res.success) {
       router.push("/aft/areas");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al eliminar");
     }
   };
 

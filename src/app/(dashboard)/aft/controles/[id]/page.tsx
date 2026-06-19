@@ -8,6 +8,7 @@ import { getReconciliation, completeControl, cancelControl } from "@/app/actions
 import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
+import { toast } from "sonner";
 
 const AFT_ALLOWED_ROLES: ProfileRole[] = ["admin", "jefe"];
 
@@ -57,8 +58,9 @@ export default function ControlDetallePage({ params }: { params: Promise<{ id: s
       // Refetch
       const rec = await getReconciliation(id);
       if (rec.success) setReconciliation(rec.data);
+      toast.success("Control marcado como completado");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al completar");
     }
   };
 
@@ -68,7 +70,7 @@ export default function ControlDetallePage({ params }: { params: Promise<{ id: s
     if (res.success) {
       router.push("/aft");
     } else {
-      alert(res.error);
+      toast.error(res.error ?? "Error al cancelar");
     }
   };
 
