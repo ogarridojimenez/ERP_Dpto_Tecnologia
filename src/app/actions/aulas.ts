@@ -202,10 +202,20 @@ export async function iniciarSession(formData: FormData) {
 
     if (lErr) return { success: false, error: lErr.message } as ActionResult;
 
+    // Lee la organization del perfil del usuario. Si no la tiene, deja
+    // null y que la fila herede la default de la columna si existe; no
+    // hardcodeamos el UUID.
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("organization_id")
+      .eq("id", user.id)
+      .single();
+    const organizationId: string | null = profile?.organization_id ?? null;
+
     const sessionId = crypto.randomUUID();
 
     const visitas = locales.map((l) => ({
-      organization_id: "00000000-0000-0000-0000-000000000001",
+      organization_id: organizationId,
       session_id: sessionId,
       locale_id: l.id,
       fecha_visita: parsed.data.fecha_visita,
