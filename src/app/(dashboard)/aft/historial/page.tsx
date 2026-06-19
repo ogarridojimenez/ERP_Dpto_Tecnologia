@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { deleteControl } from "@/app/actions/aft";
@@ -10,6 +10,7 @@ import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
 const AFT_ALLOWED_ROLES: ProfileRole[] = ["admin", "jefe"];
+const PAGE_SIZE = 25;
 
 const ESTADO_COLORS = {
   planificado: { bg: "bg-slate-50", text: "text-slate-700", border: "border-slate-300", label: "Planificado" },
@@ -21,31 +22,62 @@ const ESTADO_COLORS = {
 export default function HistorialPage() {
   const [userRole, setUserRole] = useState<ProfileRole | null>(null);
   const [controles, setControles] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filterEstado, setFilterEstado] = useState<string>("todos");
-  const [filterArea, setFilterArea] = useState<string>("todas");
+  const [filterAreaId, setFilterAreaId] = useState<string>("todas");
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [areasList, setAreasList] = useState<{ id: string; codigo: string; nombre: string }[]>([]);
 
+  // Carga inicial: perfil + lista de areas para el dropdown
   useEffect(() => {
-    const fetchData = async () => {
+    const init = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      if (!user) return;
 
-      const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).is("deleted_at", null).single();
+      const [{ data: profile }, { data: areas }] = await Promise.all([
+        supabase.from("profiles").select("role").eq("id", user.id).is("deleted_at", null).single(),
+        supabase.from("areas_aft").select("id, codigo, nombre").is("deleted_at", null).order("codigo"),
+      ]);
       if (profile) setUserRole(profile.role as ProfileRole);
-
-      const { data } = await supabase
-        .from("controles_aft")
-        .select("id, fecha_planificada, fecha_realizada, estado, created_at, areas_aft(codigo, nombre), activos_aft(count)")
-        .is("deleted_at", null)
-        .order("fecha_planificada", { ascending: false });
-
-      if (data) setControles(data);
-      setLoading(false);
+      if (areas) setAreasList(areas);
     };
-    fetchData();
+    init();
   }, []);
+
+  // Reset pagina cuando cambian filtros server-side
+  useEffect(() => {
+    setPage(1);
+  }, [filterEstado, filterAreaId]);
+
+  const fetchPage = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+    let q = supabase
+      .from("controles_aft")
+      .select("id, fecha_planificada, fecha_realizada, estado, created_at, areas_aft(codigo, nombre), activos_aft(count)", { count: "exact" })
+      .is("deleted_at", null);
+
+    if (filterEstado !== "todos") q = q.eq("estado", filterEstado);
+    if (filterAreaId !== "todas") q = q.eq("area_id", filterAreaId);
+
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, count } = await q
+      .order("fecha_planificada", { ascending: false })
+      .range(from, to);
+
+    setControles(data ?? []);
+    setTotal(count ?? 0);
+    setLoading(false);
+  }, [filterEstado, filterAreaId, page]);
+
+  useEffect(() => {
+    if (!userRole) return;
+    fetchPage();
+  }, [userRole, fetchPage]);
 
   const handleDelete = async (id: string, codigo: string, estado: string) => {
     const msg = estado === "completado"
@@ -54,32 +86,29 @@ export default function HistorialPage() {
     if (!confirm(msg)) return;
     const res = await deleteControl(id);
     if (res.success) {
-      setControles(controles.filter(c => c.id !== id));
+      // Refetch la pagina actual para mantener el conteo correcto
+      fetchPage();
+      toast.success("Control eliminado");
     } else {
       toast.error(res.error ?? "Error al eliminar");
     }
   };
 
-  if (loading || !userRole) {
+  if (!userRole) {
     return <div className="flex items-center justify-center py-20 text-gray-400">Cargando historial...</div>;
   }
 
-  const areas = Array.from(new Set(controles.map(c => (c as any).areas_aft?.codigo).filter(Boolean)));
-
-  let filtered = controles;
-  if (filterEstado !== "todos") {
-    filtered = filtered.filter(c => c.estado === filterEstado);
-  }
-  if (filterArea !== "todas") {
-    filtered = filtered.filter(c => (c as any).areas_aft?.codigo === filterArea);
-  }
+  // Filtro de busqueda libre se aplica solo sobre la pagina cargada
+  let visible = controles;
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
-    filtered = filtered.filter(c => {
+    visible = visible.filter((c) => {
       const area = (c as any).areas_aft;
       return area?.codigo?.toLowerCase().includes(term) || area?.nombre?.toLowerCase().includes(term);
     });
   }
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ALLOWED_ROLES}>
@@ -97,7 +126,7 @@ export default function HistorialPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <input
               type="text"
-              placeholder="🔍 Buscar por código o nombre de área..."
+              placeholder="🔍 Buscar en la página actual..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="rounded-lg border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
@@ -114,19 +143,25 @@ export default function HistorialPage() {
               <option value="cancelado">Cancelado</option>
             </select>
             <select
-              value={filterArea}
-              onChange={(e) => setFilterArea(e.target.value)}
+              value={filterAreaId}
+              onChange={(e) => setFilterAreaId(e.target.value)}
               className="rounded-lg border border-gray-300 p-2 text-sm bg-white"
             >
               <option value="todas">Todas las áreas</option>
-              {areas.map(c => <option key={c} value={c || ""}>{c}</option>)}
+              {areasList.map((a) => (
+                <option key={a.id} value={a.id}>{a.codigo} — {a.nombre}</option>
+              ))}
             </select>
           </div>
-          <p className="text-xs text-gray-500 mt-2">{filtered.length} de {controles.length} controles</p>
+          <p className="text-xs text-gray-500 mt-2">
+            {loading
+              ? "Cargando..."
+              : `${visible.length} visibles · ${total} totales · página ${page} de ${totalPages}`}
+          </p>
         </div>
 
         {/* Lista */}
-        {filtered.length === 0 ? (
+        {!loading && visible.length === 0 ? (
           <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center text-gray-400">
             <div className="text-5xl mb-3">📚</div>
             <p className="font-bold">Sin controles en el historial</p>
@@ -148,7 +183,7 @@ export default function HistorialPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {filtered.map((c) => {
+                  {visible.map((c) => {
                     const ec = ESTADO_COLORS[c.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.planificado;
                     const area = (c as any).areas_aft;
                     const mbCount = (c as any).activos_aft?.[0]?.count || 0;
@@ -189,6 +224,31 @@ export default function HistorialPage() {
                 </tbody>
               </table>
             </div>
+
+            {/* Paginacion */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1 || loading}
+                  className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700 disabled:opacity-40"
+                >
+                  ← Anterior
+                </button>
+                <span className="text-gray-600">
+                  Página <strong>{page}</strong> de <strong>{totalPages}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page >= totalPages || loading}
+                  className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700 disabled:opacity-40"
+                >
+                  Siguiente →
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
