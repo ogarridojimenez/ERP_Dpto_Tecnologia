@@ -9,6 +9,25 @@ import {
 import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
 import { uuidSchema } from "@/lib/schemas/aft";
 
+// =============================================================================
+// NOTA (P1 de PLAN_FASES — pendiente): este archivo aun usa getAdminClient en
+// todas sus operaciones. NO migrar a cliente con sesion sin resolver primero:
+//
+// 1. Lecturas (obtenerLocalesConMedios, obtenerSesiones, obtenerSession):
+//    visitas_aulas tiene policy SELECT "own" (auth.uid() = user_id O admin /
+//    jefe / especialista_hardware). El rol 'tecnico' SI accede al modulo de
+//    aulas en la UI, pero RLS lo limitaria a sus propias visitas (vacias en
+//    la practica). Migrar romperia la UX.
+//
+// 2. Escrituras sobre locales (crearLocal, toggleBloqueoLocal, eliminarLocal):
+//    ROLES.AULAS_ADMIN = ['admin','jefe','especialista_hardware'], pero las
+//    policies INSERT/UPDATE/DELETE de locales solo admiten admin/jefe. El
+//    cliente admin oculta este desajuste. Migrar romperia a especialistas.
+//
+// Antes de migrar: decidir si ampliar las RLS para incluir especialista_hardware
+// (preferido segun el modelo de roles) o restringir AULAS_ADMIN a admin/jefe.
+// =============================================================================
+
 type ActionResult<T = unknown> = {
   success: boolean;
   data?: T;
