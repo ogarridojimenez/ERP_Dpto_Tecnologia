@@ -1,11 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { verifyBearer, verifySyncToken } from "@/lib/auth/bearer";
+import { logger } from "@/lib/logger";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function POST(req: NextRequest) {
   try {
+    // Authn: aceptamos Bearer JWT del usuario movil o X-Sync-Token compartido.
+    const session = await verifyBearer(req);
+    const tokenOk = !session && verifySyncToken(req);
+    if (!session && !tokenOk) {
+      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    }
+
     const { control_id, mbs } = await req.json();
 
     if (!control_id || !Array.isArray(mbs) || mbs.length === 0) {
@@ -33,6 +42,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, synced: count || 0 });
   } catch (e) {
+    logger.error("[api/aft/sync]", e);
     return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 }
