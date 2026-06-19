@@ -1,14 +1,13 @@
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { deleteControl } from "@/app/actions/aft";
-import { ProfileRole } from "@/types/database";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import type { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
-import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
+import { HistorialFilters } from "./historial-filters";
+import { DeleteControlButton } from "./delete-control-button";
+
+export const dynamic = "force-dynamic";
 
 const AFT_ALLOWED_ROLES: ProfileRole[] = ["admin", "jefe"];
 const PAGE_SIZE = 25;
@@ -20,96 +19,78 @@ const ESTADO_COLORS = {
   cancelado: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300", label: "Cancelado" },
 };
 
-export default function HistorialPage() {
-  const [userRole, setUserRole] = useState<ProfileRole | null>(null);
-  const [controles, setControles] = useState<any[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [filterEstado, setFilterEstado] = useState<string>("todos");
-  const [filterAreaId, setFilterAreaId] = useState<string>("todas");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [page, setPage] = useState(1);
-  const [areasList, setAreasList] = useState<{ id: string; codigo: string; nombre: string }[]>([]);
+type SearchParams = {
+  page?: string;
+  estado?: string;
+  area_id?: string;
+};
 
-  // Carga inicial: perfil + lista de areas para el dropdown
-  useEffect(() => {
-    const init = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+function buildPageHref(base: URLSearchParams, page: number) {
+  const next = new URLSearchParams(base.toString());
+  if (page <= 1) next.delete("page");
+  else next.set("page", String(page));
+  const qs = next.toString();
+  return qs ? `?${qs}` : "?";
+}
 
-      const [{ data: profile }, { data: areas }] = await Promise.all([
-        supabase.from("profiles").select("role").eq("id", user.id).is("deleted_at", null).single(),
-        supabase.from("areas_aft").select("id, codigo, nombre").is("deleted_at", null).order("codigo"),
-      ]);
-      if (profile) setUserRole(profile.role as ProfileRole);
-      if (areas) setAreasList(areas);
-    };
-    init();
-  }, []);
+export default async function HistorialPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page ?? 1) || 1);
+  const estado = sp.estado ?? "todos";
+  const areaId = sp.area_id ?? "todas";
 
-  // Reset pagina cuando cambian filtros server-side
-  useEffect(() => {
-    setPage(1);
-  }, [filterEstado, filterAreaId]);
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-  const fetchPage = useCallback(async () => {
-    setLoading(true);
-    const supabase = createClient();
-    let q = supabase
-      .from("controles_aft")
-      .select("id, fecha_planificada, fecha_realizada, estado, created_at, areas_aft(codigo, nombre), activos_aft(count)", { count: "exact" })
-      .is("deleted_at", null);
+  const [profileRes, areasRes] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .is("deleted_at", null)
+      .single(),
+    supabase
+      .from("areas_aft")
+      .select("id, codigo, nombre")
+      .is("deleted_at", null)
+      .order("codigo"),
+  ]);
 
-    if (filterEstado !== "todos") q = q.eq("estado", filterEstado);
-    if (filterAreaId !== "todas") q = q.eq("area_id", filterAreaId);
+  const userRole = (profileRes.data?.role ?? "tecnico") as ProfileRole;
+  const areasList = areasRes.data ?? [];
 
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    const { data, count } = await q
-      .order("fecha_planificada", { ascending: false })
-      .range(from, to);
+  let q = supabase
+    .from("controles_aft")
+    .select(
+      "id, fecha_planificada, fecha_realizada, estado, created_at, areas_aft(codigo, nombre), activos_aft(count)",
+      { count: "exact" }
+    )
+    .is("deleted_at", null);
 
-    setControles(data ?? []);
-    setTotal(count ?? 0);
-    setLoading(false);
-  }, [filterEstado, filterAreaId, page]);
+  if (estado !== "todos") q = q.eq("estado", estado);
+  if (areaId !== "todas") q = q.eq("area_id", areaId);
 
-  useEffect(() => {
-    if (!userRole) return;
-    fetchPage();
-  }, [userRole, fetchPage]);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+  const { data, count } = await q
+    .order("fecha_planificada", { ascending: false })
+    .range(from, to);
 
-  const handleDelete = async (id: string, codigo: string, estado: string) => {
-    const msg = estado === "completado"
-      ? `¿Eliminar el control completado del área "${codigo}"? Esto lo ocultará del historial.`
-      : `¿Eliminar el control (${estado}) del área "${codigo}"? Esto lo ocultará del historial.`;
-    if (!confirm(msg)) return;
-    const res = await deleteControl(id);
-    if (res.success) {
-      // Refetch la pagina actual para mantener el conteo correcto
-      fetchPage();
-      toast.success("Control eliminado");
-    } else {
-      toast.error(res.error ?? "Error al eliminar");
-    }
-  };
-
-  if (!userRole) {
-    return <div className="flex items-center justify-center py-20 text-gray-400">Cargando historial...</div>;
-  }
-
-  // Filtro de busqueda libre se aplica solo sobre la pagina cargada
-  let visible = controles;
-  if (searchTerm) {
-    const term = searchTerm.toLowerCase();
-    visible = visible.filter((c) => {
-      const area = (c as any).areas_aft;
-      return area?.codigo?.toLowerCase().includes(term) || area?.nombre?.toLowerCase().includes(term);
-    });
-  }
-
+  const controles = data ?? [];
+  const total = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // Construye URLSearchParams para los Links de paginacion conservando filtros.
+  const baseParams = new URLSearchParams();
+  if (estado !== "todos") baseParams.set("estado", estado);
+  if (areaId !== "todas") baseParams.set("area_id", areaId);
 
   return (
     <RoleGuard userRole={userRole} allowedRoles={AFT_ALLOWED_ROLES}>
@@ -124,45 +105,14 @@ export default function HistorialPage() {
 
         {/* Filtros */}
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <input
-              type="text"
-              placeholder="🔍 Buscar en la página actual..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="rounded-lg border border-gray-300 p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-            />
-            <select
-              value={filterEstado}
-              onChange={(e) => setFilterEstado(e.target.value)}
-              className="rounded-lg border border-gray-300 p-2 text-sm bg-white"
-            >
-              <option value="todos">Todos los estados</option>
-              <option value="planificado">Planificado</option>
-              <option value="en_curso">En curso</option>
-              <option value="completado">Completado</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-            <select
-              value={filterAreaId}
-              onChange={(e) => setFilterAreaId(e.target.value)}
-              className="rounded-lg border border-gray-300 p-2 text-sm bg-white"
-            >
-              <option value="todas">Todas las áreas</option>
-              {areasList.map((a) => (
-                <option key={a.id} value={a.id}>{a.codigo} — {a.nombre}</option>
-              ))}
-            </select>
-          </div>
+          <HistorialFilters areas={areasList} />
           <p className="text-xs text-gray-500 mt-2">
-            {loading
-              ? "Cargando..."
-              : `${visible.length} visibles · ${total} totales · página ${page} de ${totalPages}`}
+            {controles.length} visibles · {total} totales · página {page} de {totalPages}
           </p>
         </div>
 
         {/* Lista */}
-        {!loading && visible.length === 0 ? (
+        {controles.length === 0 ? (
           <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center text-gray-400">
             <div className="text-5xl mb-3">📚</div>
             <p className="font-bold">Sin controles en el historial</p>
@@ -184,10 +134,11 @@ export default function HistorialPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {visible.map((c) => {
+                  {controles.map((c) => {
                     const ec = ESTADO_COLORS[c.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.planificado;
-                    const area = (c as any).areas_aft;
-                    const mbCount = (c as any).activos_aft?.[0]?.count || 0;
+                    const area = (c as { areas_aft?: { codigo?: string; nombre?: string } }).areas_aft;
+                    const mbCount =
+                      (c as { activos_aft?: { count: number }[] }).activos_aft?.[0]?.count ?? 0;
                     return (
                       <tr key={c.id} className="hover:bg-gray-50">
                         <td className="px-4 py-3 text-gray-700">
@@ -208,16 +159,17 @@ export default function HistorialPage() {
                         </td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex flex-wrap justify-end gap-2">
-                            <Link href={`/aft/controles/${c.id}`} className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100">
+                            <Link
+                              href={`/aft/controles/${c.id}`}
+                              className="rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 hover:bg-blue-100"
+                            >
                               Ver
                             </Link>
-                            <button
-                              onClick={() => handleDelete(c.id, area?.codigo || "?", c.estado)}
-                              aria-label="Eliminar control"
-                              className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                            <DeleteControlButton
+                              id={c.id}
+                              codigo={area?.codigo || "?"}
+                              estado={c.estado}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -230,25 +182,33 @@ export default function HistorialPage() {
             {/* Paginacion */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3 text-sm">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page <= 1 || loading}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700 disabled:opacity-40"
-                >
-                  ← Anterior
-                </button>
+                {page > 1 ? (
+                  <Link
+                    href={buildPageHref(baseParams, page - 1)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700"
+                  >
+                    ← Anterior
+                  </Link>
+                ) : (
+                  <span className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-400 opacity-40">
+                    ← Anterior
+                  </span>
+                )}
                 <span className="text-gray-600">
                   Página <strong>{page}</strong> de <strong>{totalPages}</strong>
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page >= totalPages || loading}
-                  className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700 disabled:opacity-40"
-                >
-                  Siguiente →
-                </button>
+                {page < totalPages ? (
+                  <Link
+                    href={buildPageHref(baseParams, page + 1)}
+                    className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-700"
+                  >
+                    Siguiente →
+                  </Link>
+                ) : (
+                  <span className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 font-bold text-gray-400 opacity-40">
+                    Siguiente →
+                  </span>
+                )}
               </div>
             )}
           </div>
