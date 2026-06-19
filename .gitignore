@@ -53,15 +53,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# scripts debug/inspección de raíz (desarrollo, no producción)
-/inspect-*.js
-/run-*.js
-/seed-*.js
-/test-e2e.js
-/check-*.js
-/read-excel*.js
-/generate-icon.js
-/reset-passwords.js
+# scripts debug/inspección (desarrollo, no producción)
+/scripts/debug/
 /deploy-copyright.txt
 
 # playwright MCP (snapshots y logs de esta sesión)
