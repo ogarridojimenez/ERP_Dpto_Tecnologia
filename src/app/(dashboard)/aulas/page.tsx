@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/utils";
+import { Trash2 } from "lucide-react";
 
 type SessionData = {
   session_id: string;
@@ -168,10 +169,11 @@ export default function AulasHistoryPage() {
                         if (window.confirm(`¿Eliminar la revisión del ${formatDate(s.fecha_visita)} (${s.revisor})?`))
                           handleDelete(s.session_id);
                       }}
+                      aria-label="Eliminar revisión"
                       className="rounded p-1 text-sm text-gray-400 hover:bg-red-50 hover:text-red-600"
                       title="Eliminar revisión"
                     >
-                      🗑️
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>

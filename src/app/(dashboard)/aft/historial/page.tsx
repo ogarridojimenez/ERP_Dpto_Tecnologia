@@ -8,6 +8,7 @@ import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { formatDate } from "@/lib/utils";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 const AFT_ALLOWED_ROLES: ProfileRole[] = ["admin", "jefe"];
 const PAGE_SIZE = 25;
@@ -212,9 +213,10 @@ export default function HistorialPage() {
                             </Link>
                             <button
                               onClick={() => handleDelete(c.id, area?.codigo || "?", c.estado)}
+                              aria-label="Eliminar control"
                               className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
                             >
-                              🗑️
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         </td>

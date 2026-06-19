@@ -9,6 +9,7 @@ import { ProfileRole } from "@/types/database";
 import { RoleGuard } from "@/components/RoleGuard";
 import { logger } from "@/lib/logger";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 const AFT_ADMIN_ROLES: ProfileRole[] = ["admin", "jefe"];
 
@@ -169,9 +170,10 @@ export default function AreasPage() {
                           </button>
                           <button
                             onClick={() => handleDelete(a.id, a.codigo, mbCount)}
+                            aria-label="Eliminar área"
                             className="rounded-lg bg-red-50 px-3 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
                           >
-                            🗑️
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>

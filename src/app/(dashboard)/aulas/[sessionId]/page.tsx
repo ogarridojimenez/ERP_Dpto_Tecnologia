@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatDateTime, formatDate } from "@/lib/utils";
 import { toggleBloqueoLocal, crearLocal, eliminarLocal } from "@/app/actions/aulas";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
 
 type LocaleRow = {
   id: string;
@@ -251,10 +252,11 @@ export default function SessionPanelPage() {
                           toast.error(res.error ?? "Error al eliminar");
                         }
                       }}
-                      className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white text-[10px] shadow-sm opacity-0 transition-all hover:bg-red-50 group-hover:opacity-100"
+                      aria-label="Eliminar local"
+                      className="absolute -left-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm opacity-0 transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
                       title="Eliminar local"
                     >
-                      🗑️
+                      <Trash2 className="h-2.5 w-2.5" />
                     </button>
                   </div>
                 );
