@@ -1,51 +1,31 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
-import { deleteGuardiaParte } from "@/app/actions/guardia";
-import { toast } from "sonner";
+import { DeleteParteButton } from "./delete-parte-button";
+
+export const dynamic = "force-dynamic";
 
 const ESTADO_COLORS = {
   borrador: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-300", label: "Borrador" },
   completado: { bg: "bg-green-50", text: "text-green-700", border: "border-green-300", label: "Completado" },
 };
 
-export default function GuardiaPage() {
-  const [partes, setPartes] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+type Parte = {
+  id: string;
+  fecha: string;
+  estado: string;
+  created_at: string;
+};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("guardia_partes")
-        .select("*")
-        .is("deleted_at", null)
-        .order("fecha", { ascending: false });
-      if (data) setPartes(data);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+export default async function GuardiaPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("guardia_partes")
+    .select("id, fecha, estado, created_at")
+    .is("deleted_at", null)
+    .order("fecha", { ascending: false });
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Eliminar este parte de guardia? Esta accion no se puede deshacer.")) return;
-    const result = await deleteGuardiaParte(id);
-    if (result.success) {
-      setPartes((prev) => prev.filter((p) => p.id !== id));
-      toast.success("Parte eliminado");
-    } else {
-      toast.error(result.error || "Error al eliminar");
-    }
-  };
-
-  if (loading) {
-    return <div className="flex items-center justify-center py-20 text-gray-400">Cargando...</div>;
-  }
+  const partes: Parte[] = data ?? [];
 
   return (
     <div className="space-y-6">
@@ -103,15 +83,7 @@ export default function GuardiaPage() {
                     <span className={`px-3 py-1 rounded-full text-xs font-bold border ${ec.bg} ${ec.text} ${ec.border}`}>
                       {ec.label}
                     </span>
-                    <button
-                      onClick={() => handleDelete(p.id)}
-                      className="rounded-lg p-2 text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                      title="Eliminar"
-                    >
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                    <DeleteParteButton parteId={p.id} />
                   </div>
                 </div>
               );
