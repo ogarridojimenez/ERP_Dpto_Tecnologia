@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { areaAftSchema, controlAftSchema, uuidSchema, syncScansSchema } from "@/lib/schemas/aft";
 import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
+import { createClient as createUserClient } from "@/lib/supabase/server";
 
 type ActionResult<T = unknown> = {
   success: boolean;
@@ -374,9 +375,12 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
   try {
     const validatedId = uuidSchema.parse(controlId);
     await requireAuth();
-    const admin = getAdminClient();
+    // Lectura: usa cliente con la sesion del usuario para que RLS
+    // (areas_aft / controles_aft / activos_aft tienen SELECT TO
+    // authenticated) actue como defensa en profundidad.
+    const supabase = await createUserClient();
 
-    const { data: control, error: cErr } = await admin
+    const { data: control, error: cErr } = await supabase
       .from("controles_aft")
       .select("id, area_id, fecha_planificada, fecha_realizada, estado, areas_aft(codigo, nombre)")
       .eq("id", validatedId)
@@ -386,7 +390,7 @@ export async function getReconciliation(controlId: string): Promise<Reconciliati
       return { success: false, error: cErr?.message || "Control no encontrado" };
     }
 
-    const { data: activos, error: aErr } = await admin
+    const { data: activos, error: aErr } = await supabase
       .from("activos_aft")
       .select("mb, descripcion, escaneado, fecha_escaneo")
       .eq("control_id", validatedId)

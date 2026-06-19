@@ -19,6 +19,7 @@ import type {
   GuardiaAreaConPerifericos,
 } from "@/types/database";
 import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
+import { createClient as createUserClient } from "@/lib/supabase/server";
 
 type ActionResult = {
   success: boolean;
@@ -33,25 +34,28 @@ type ActionResult = {
 export async function getGuardiaAreas(): Promise<ActionResult> {
   try {
     await requireAuth();
-    const admin = getAdminClient();
+    // Lectura: cliente con sesion (RLS tiene SELECT para authenticated).
+    const supabase = await createUserClient();
 
-    const { data: areas, error: areasError } = await admin
-      .from("guardia_areas")
-      .select("*")
-      .is("deleted_at", null)
-      .order("codigo");
+    // 2 round-trips en paralelo.
+    const [areasRes, perifericosRes] = await Promise.all([
+      supabase
+        .from("guardia_areas")
+        .select("*")
+        .is("deleted_at", null)
+        .order("codigo"),
+      supabase
+        .from("guardia_perifericos")
+        .select("*")
+        .is("deleted_at", null)
+        .order("orden"),
+    ]);
 
-    if (areasError) throw new Error(areasError.message);
+    if (areasRes.error) throw new Error(areasRes.error.message);
 
-    const { data: perifericos } = await admin
-      .from("guardia_perifericos")
-      .select("*")
-      .is("deleted_at", null)
-      .order("orden");
-
-    const result: GuardiaAreaConPerifericos[] = (areas || []).map((a) => ({
+    const result: GuardiaAreaConPerifericos[] = (areasRes.data || []).map((a) => ({
       ...a,
-      perifericos: (perifericos || []).filter((p) => p.area_id === a.id),
+      perifericos: (perifericosRes.data || []).filter((p) => p.area_id === a.id),
     }));
 
     return { success: true, data: result };
@@ -210,9 +214,11 @@ export async function deleteGuardiaPeriferico(id: string) {
 export async function getGuardiaPartes(): Promise<ActionResult> {
   try {
     await requireAuth();
-    const admin = getAdminClient();
+    // Lectura: cliente con sesion del usuario; guardia_partes tiene
+    // SELECT TO authenticated USING (deleted_at IS NULL).
+    const supabase = await createUserClient();
 
-    const { data, error } = await admin
+    const { data, error } = await supabase
       .from("guardia_partes")
       .select("*")
       .is("deleted_at", null)
@@ -229,18 +235,20 @@ export async function getGuardiaParte(id: string): Promise<ActionResult> {
   try {
     const validatedId = uuidSchema.parse(id);
     await requireAuth();
-    const admin = getAdminClient();
+    // Lectura: cliente con sesion (RLS de guardia_* tiene SELECT TO
+    // authenticated). Defensa en profundidad ademas del requireAuth.
+    const supabase = await createUserClient();
 
     // 2 round-trips en paralelo en lugar de 3 secuenciales.
     // - parte por separado: mantiene la sintaxis simple.
     // - registros con area + detalles + periferico anidados en una sola query.
     const [parteRes, registrosRes] = await Promise.all([
-      admin
+      supabase
         .from("guardia_partes")
         .select("*")
         .eq("id", validatedId)
         .maybeSingle(),
-      admin
+      supabase
         .from("guardia_registros")
         .select("*, area:guardia_areas(*), detalles:guardia_detalle(*, periferico:guardia_perifericos(*))")
         .eq("guardia_parte_id", validatedId),
