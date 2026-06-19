@@ -2,6 +2,22 @@
 
 import { ProfileRole } from "@/types/database";
 
+/**
+ * RoleGuard — defensa COSMETICA, no de seguridad.
+ *
+ * Oculta UI cuando el rol del usuario no esta en allowedRoles. Util
+ * para no mostrar botones/secciones que el backend va a rechazar.
+ *
+ * NO confiar en este componente como capa de seguridad:
+ * - El rol llega del cliente, donde puede ser manipulado.
+ * - Aunque el componente no renderice, los datos del modulo igual
+ *   pueden haber bajado al bundle JS.
+ *
+ * La seguridad REAL vive en:
+ * 1. middleware (Next.js) — bloquea rutas /aft, /guardia, etc. sin sesion.
+ * 2. requireRole() en server actions — valida en el servidor.
+ * 3. RLS policies en Supabase — ultima linea de defensa en BD.
+ */
 type Props = {
   userRole: ProfileRole;
   allowedRoles: ProfileRole[];
