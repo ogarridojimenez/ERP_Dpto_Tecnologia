@@ -1,65 +1,76 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { getGuardiaParte, completarGuardiaParte } from "@/app/actions/guardia";
+import { notFound, redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
-import { toast } from "sonner";
+import { CompletarParteButton } from "./completar-parte-button";
+
+export const dynamic = "force-dynamic";
 
 const ESTADO_COLORS = {
   borrador: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-300", label: "Borrador" },
   completado: { bg: "bg-green-50", text: "text-green-700", border: "border-green-300", label: "Completado" },
 };
 
-export default function GuardiaPartePage() {
-  const params = useParams();
-  const router = useRouter();
-  const parteId = params.id as string;
-  const [parte, setParte] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [completando, setCompletando] = useState(false);
+type Detalle = {
+  id: string;
+  periferico_id: string;
+  cantidad_entrega: number;
+  cantidad_recibo: number;
+  periferico?: { id: string; nombre: string };
+};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await getGuardiaParte(parteId);
-      if (result.success) {
-        setParte(result.data);
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [parteId]);
+type Registro = {
+  id: string;
+  area_id: string;
+  entregado_por_nombre: string | null;
+  entregado_por_solapin: string | null;
+  fecha_hora_entrega: string | null;
+  recibido_por_nombre: string | null;
+  recibido_por_solapin: string | null;
+  fecha_hora_recibo: string | null;
+  area?: { id: string; nombre: string; codigo: string; tipo: string };
+  detalles?: Detalle[];
+};
 
-  const handleCompletar = async () => {
-    setCompletando(true);
-    const result = await completarGuardiaParte(parteId);
-    if (result.success) {
-      const updated = await getGuardiaParte(parteId);
-      if (updated.success) setParte(updated.data);
-      toast.success("Parte completado");
-    } else {
-      toast.error(result.error || "Error al completar");
-    }
-    setCompletando(false);
-  };
+type Parte = {
+  id: string;
+  fecha: string;
+  estado: string;
+  observaciones_generales: string | null;
+  registros?: Registro[];
+};
 
-  if (loading) {
-    return <div className="flex items-center justify-center py-20 text-gray-400">Cargando...</div>;
-  }
+export default async function GuardiaPartePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: parteId } = await params;
 
-  if (!parte) {
-    return (
-      <div className="p-6 text-center text-gray-500">
-        <p>Parte no encontrado</p>
-        <Link href="/guardia" className="text-blue-600 hover:underline mt-2 inline-block">Volver al historial</Link>
-      </div>
-    );
-  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
+  const [parteRes, registrosRes] = await Promise.all([
+    supabase
+      .from("guardia_partes")
+      .select("id, fecha, estado, observaciones_generales")
+      .eq("id", parteId)
+      .maybeSingle(),
+    supabase
+      .from("guardia_registros")
+      .select("*, area:guardia_areas(*), detalles:guardia_detalle(*, periferico:guardia_perifericos(*))")
+      .eq("guardia_parte_id", parteId),
+  ]);
+
+  if (!parteRes.data) notFound();
+
+  const parte: Parte = { ...parteRes.data, registros: (registrosRes.data ?? []) as Registro[] };
   const ec = ESTADO_COLORS[parte.estado as keyof typeof ESTADO_COLORS] || ESTADO_COLORS.borrador;
-  const allEntregado = parte.registros?.every((r: any) => r.fecha_hora_entrega) ?? false;
-  const allRecibido = parte.registros?.every((r: any) => r.fecha_hora_recibo) ?? false;
+  const allEntregado = parte.registros?.every((r) => r.fecha_hora_entrega) ?? false;
+  const allRecibido = parte.registros?.every((r) => r.fecha_hora_recibo) ?? false;
 
   return (
     <div className="space-y-6">
@@ -85,26 +96,20 @@ export default function GuardiaPartePage() {
       </div>
 
       {/* Acciones */}
-      <div className="flex gap-3">
-        {allEntregado && !allRecibido && (
-          <button
-            onClick={handleCompletar}
-            disabled={completando}
-            className="rounded-xl bg-green-600 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-green-700 active:scale-95 disabled:opacity-50"
-          >
-            {completando ? "Completando..." : "Marcar como Completado"}
-          </button>
-        )}
-      </div>
+      {allEntregado && !allRecibido && (
+        <div className="flex gap-3">
+          <CompletarParteButton parteId={parteId} />
+        </div>
+      )}
 
       {/* Areas */}
       <div className="space-y-4">
-        {parte.registros?.map((registro: any) => {
+        {parte.registros?.map((registro) => {
           const area = registro.area;
           const tieneEntrega = !!registro.fecha_hora_entrega;
           const tieneRecibo = !!registro.fecha_hora_recibo;
           const tieneDiscrepancias = registro.detalles?.some(
-            (d: any) => d.cantidad_entrega !== d.cantidad_recibo && d.cantidad_recibo > 0
+            (d) => d.cantidad_entrega !== d.cantidad_recibo && d.cantidad_recibo > 0
           );
 
           return (
@@ -140,14 +145,14 @@ export default function GuardiaPartePage() {
                   <div className="mb-3 text-sm">
                     <span className="font-bold text-gray-700">Entrega:</span>{" "}
                     <span className="text-gray-600">{registro.entregado_por_nombre} (Sol. {registro.entregado_por_solapin})</span>
-                    <span className="text-gray-400 ml-2">{new Date(registro.fecha_hora_entrega).toLocaleString("es-DO")}</span>
+                    <span className="text-gray-400 ml-2">{new Date(registro.fecha_hora_entrega!).toLocaleString("es-DO")}</span>
                   </div>
                 )}
                 {tieneRecibo && (
                   <div className="mb-3 text-sm">
                     <span className="font-bold text-gray-700">Recibo:</span>{" "}
                     <span className="text-gray-600">{registro.recibido_por_nombre} (Sol. {registro.recibido_por_solapin})</span>
-                    <span className="text-gray-400 ml-2">{new Date(registro.fecha_hora_recibo).toLocaleString("es-DO")}</span>
+                    <span className="text-gray-400 ml-2">{new Date(registro.fecha_hora_recibo!).toLocaleString("es-DO")}</span>
                   </div>
                 )}
 
@@ -163,7 +168,7 @@ export default function GuardiaPartePage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {registro.detalles.map((d: any) => {
+                        {registro.detalles.map((d) => {
                           const diff = d.cantidad_entrega - d.cantidad_recibo;
                           return (
                             <tr key={d.id} className="border-b border-gray-50">
