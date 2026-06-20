@@ -1,8 +1,8 @@
 # Progreso del PLAN_FASES — SITRADE ERP
 
-**Última actualización**: 2026-06-19
+**Última actualización**: 2026-06-19 (final sesión)
 **Rama de trabajo**: `refactor/plan-fases` (desde `main` en `79fae5d`)
-**Commits hechos**: 26 desde el baseline
+**Commits hechos**: 35+ desde el baseline
 
 Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrito después de una serie de sesiones autónomas de trabajo. Es un punto de referencia para retomar — no sustituye al plan original.
 
@@ -16,7 +16,7 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 | P2 | `/api/aft/sync` sin auth | ✅ Cerrado | `7dc9f66` |
 | P3 | Rotar `service_role_key` | ❌ **Manual** (dashboard Supabase) | — |
 | P4 | RLS anon abierto en `activos_aft` | ✅ Migración escrita (no aplicada) | `13c053d` |
-| P5 | Páginas listado como Server Components | ❌ Diferido (invasivo) | — |
+| P5 | Páginas listado como Server Components | ✅ **6 páginas convertidas** | `0b31be3`, `c957dc4`, `580fc5b`, `3c45cf7`, `c9befbc`, `2792e5b` |
 | P6 | `organization_id` hardcodeado en aulas | ✅ Cerrado | `5b5e464` |
 | P7 | `console.log/error` en prod | ✅ Cerrado (commit lleva "P6" por error) | `c93108a` |
 | P8 | Schema v1 obsoleto en producción | ✅ Migración archivar a `legacy` (no aplicada) | `d3a290c` |
@@ -35,7 +35,7 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 | P21 | `RoleGuard` engaña al modelo mental | ✅ Documentado | `b27863b` |
 | P22 | Doble sidebar | ✅ Cerrado | `049d745` |
 | P23 | Sin i18n | ❌ Diferido (gran esfuerzo) | — |
-| P24 | Emojis vs `lucide-react` | ⚠️ Documentado deferido (4 botones con 🗑️) | — |
+| P24 | Emojis vs `lucide-react` | ✅ 4 botones delete migrados a `Trash2` | `6155f7c` |
 | P25 | Sin `robots.txt` | ✅ Cerrado | `8941b36` |
 | P26 | `tmp_cdp_landing.js` y otros untracked | ✅ Cerrado | `049d745` |
 | P27 | 14 scripts debug en raíz | ✅ Cerrado (movidos a `scripts/debug/`) | `cd50a80` |
@@ -49,10 +49,27 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 
 ## Resumen numérico
 
-- ✅ Cerrado o casi cerrado: **21**
-- ⚠️ Documentado deferido: **1** (P24)
+- ✅ Cerrado o casi cerrado: **23** (incluye P5 y P24 cerrados en esta sesión)
 - ❌ Manual (no automatizable sin acceso humano): **3** (P3, P11, aplicar P4 y P8)
-- ❌ Diferido por scope: **3** (P5, P19, P23)
+- ❌ Diferido por scope: **2** (P19, P23)
+
+### Páginas convertidas a Server Component (P5)
+
+| Página | Comp. cliente extraído | Commit |
+|--------|------------------------|--------|
+| `guardia/page.tsx` (lista) | `delete-parte-button.tsx` | `0b31be3` |
+| `aft/areas/page.tsx` | `areas-client.tsx` | `c957dc4` |
+| `aft/page.tsx` (dashboard) | (ninguno: SC puro) | `580fc5b` |
+| `aft/historial/page.tsx` | `historial-filters.tsx`, `delete-control-button.tsx` | `3c45cf7` |
+| `guardia/[id]/page.tsx` (detalle parte) | `completar-parte-button.tsx` | `c9befbc` |
+| `aft/controles/[id]/page.tsx` (detalle control) | `control-actions.tsx` | `2792e5b` |
+
+**Pendientes de convertir** (no críticos):
+- `aulas/page.tsx`: expand-lazy + state local pesado. Conversión churn sin ROI claro.
+- `aulas/[sessionId]/page.tsx`: similar.
+- `guardia/[id]/[areaId]/page.tsx`: formulario grande con mucho estado.
+- `guardia/config/page.tsx`: múltiples modales y CRUD inline.
+- Páginas `nueva`/`nuevo`: ya son formularios — server actions ya están, refactor a SC puro requiere `useFormState` extra.
 
 ---
 
