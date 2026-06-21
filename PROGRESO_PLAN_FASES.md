@@ -22,7 +22,7 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 | P8 | Schema v1 obsoleto en producción | ✅ Migración archivar a `legacy` (no aplicada) | `d3a290c` |
 | P9 | `alert()`/`confirm()` nativos | ✅ Cerrado (alert → sonner; confirm mantenido) | `1006144`, `1cf9a1c` |
 | P10 | Doble helper `auth.ts` y `auth/guard.ts` | ✅ Cerrado | `049d745` |
-| P11 | 47 lint warnings de `any` | ❌ **Manual** (`supabase gen types` necesita auth CLI) | — |
+| P11 | 47 lint warnings de `any` | ✅ Tipos generados + clientes tipados (47→24 errores, -49%) | `7f2a361` |
 | P12 | `jspdf`/`qrcode` static import | ✅ Cerrado | `7e90ef5` |
 | P13 | Deps no usadas (`pg`, `prisma`) | ✅ Cerrado | `0181c25` |
 | P14 | Server actions sin helper unificado | ✅ `runAction()` creado | `1544abb` |
