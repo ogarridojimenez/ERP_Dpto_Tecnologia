@@ -53,10 +53,12 @@ export async function getGuardiaAreas(): Promise<ActionResult> {
 
     if (areasRes.error) throw new Error(areasRes.error.message);
 
-    const result: GuardiaAreaConPerifericos[] = (areasRes.data || []).map((a) => ({
+    // Cast necesario: el schema declara tipo como text generico pero a nivel
+    // de codigo lo restringimos al union GuardiaAreaTipo via Zod en escritura.
+    const result = (areasRes.data || []).map((a) => ({
       ...a,
       perifericos: (perifericosRes.data || []).filter((p) => p.area_id === a.id),
-    }));
+    })) as unknown as GuardiaAreaConPerifericos[];
 
     return { success: true, data: result };
   } catch (e) {

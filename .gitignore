@@ -41,6 +41,9 @@ yarn-error.log*
 # claude code (local agent state)
 /.claude/
 
+# supabase CLI temp (cuando se ejecuta gen types u otros)
+/supabase/.temp/
+
 # env files (can opt-in for committing if needed)
 .env
 .env*.local

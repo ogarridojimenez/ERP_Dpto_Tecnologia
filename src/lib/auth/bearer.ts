@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { NextRequest } from "next/server";
+import type { Database } from "@/types/supabase";
 
 /**
  * Verifica un Authorization: Bearer <jwt> contra Supabase Auth y devuelve
@@ -20,7 +21,7 @@ export async function verifyBearer(
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !anonKey) return null;
 
-  const supabase = createClient(url, anonKey, {
+  const supabase = createClient<Database>(url, anonKey, {
     global: { headers: { Authorization: `Bearer ${jwt}` } },
     auth: { autoRefreshToken: false, persistSession: false },
   });

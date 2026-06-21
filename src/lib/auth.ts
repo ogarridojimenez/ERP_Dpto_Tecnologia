@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import type { ProfileRole } from "@/types/database";
+import type { Database } from "@/types/supabase";
 
 type SupabaseUser = Awaited<ReturnType<typeof createClient>>;
 
@@ -18,7 +19,7 @@ export type AuthContext = {
 };
 
 export function getAdminClient() {
-  return createAdminClient(
+  return createAdminClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }

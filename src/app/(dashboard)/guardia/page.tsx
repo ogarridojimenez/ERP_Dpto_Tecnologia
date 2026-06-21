@@ -14,7 +14,7 @@ type Parte = {
   id: string;
   fecha: string;
   estado: string;
-  created_at: string;
+  created_at: string | null;
 };
 
 export default async function GuardiaPage() {
@@ -74,7 +74,7 @@ export default async function GuardiaPage() {
                       <div className="min-w-0">
                         <p className="font-bold text-gray-900">{formatDate(p.fecha)}</p>
                         <p className="text-xs text-gray-500 mt-0.5">
-                          Creado: {new Date(p.created_at).toLocaleDateString("es-DO")}
+                          Creado: {p.created_at ? new Date(p.created_at).toLocaleDateString("es-DO") : "—"}
                         </p>
                       </div>
                     </div>

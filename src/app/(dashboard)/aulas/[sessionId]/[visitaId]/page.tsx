@@ -100,10 +100,10 @@ export default function RevisarLocalPage() {
           .order("codigo");
         if (cancelled) return;
         setEquipos(
-          (medios ?? []).map((m: { id: string; codigo: string; nombre: string }) => ({
+          (medios ?? []).map((m) => ({
             medio_id: m.id,
-            codigo: m.codigo,
-            nombre: m.nombre,
+            codigo: m.codigo ?? "",
+            nombre: m.nombre ?? "",
             estado: null,
             observaciones: "",
           }))

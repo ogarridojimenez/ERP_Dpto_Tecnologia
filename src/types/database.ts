@@ -155,7 +155,7 @@ export interface GuardiaPeriferico {
   orden: number;
   activo: boolean;
   user_id: string;
-  created_at: string;
+  created_at: string | null;
   deleted_at: string | null;
 }
 

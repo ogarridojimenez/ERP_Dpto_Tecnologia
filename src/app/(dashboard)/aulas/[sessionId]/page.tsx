@@ -29,8 +29,8 @@ type VisitaRow = {
 
 type MedioRow = {
   id: string;
-  codigo: string;
-  nombre: string;
+  codigo: string | null;
+  nombre: string | null;
   locale_id: string;
 };
 
@@ -219,7 +219,9 @@ export default function SessionPanelPage() {
                       {!isBlocked && localeMedios.length > 0 && (
                         <div className="mt-1.5 flex flex-wrap justify-center gap-1">
                           {["PC", "Periféricos", "TV", "TW", "DS"].map((eq) => {
-                            const hasEq = localeMedios.some((m) => m.nombre.includes(eq) || m.codigo.includes(eq));
+                            const hasEq = localeMedios.some(
+                              (m) => (m.nombre ?? "").includes(eq) || (m.codigo ?? "").includes(eq)
+                            );
                             return hasEq ? (
                               <span key={eq} className="text-[10px]" title={eq}>
                                 {EQ_ICONS[eq] || eq}
