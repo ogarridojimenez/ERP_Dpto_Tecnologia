@@ -19,7 +19,7 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 | P5 | Páginas listado como Server Components | ✅ **6 páginas convertidas** | `0b31be3`, `c957dc4`, `580fc5b`, `3c45cf7`, `c9befbc`, `2792e5b` |
 | P6 | `organization_id` hardcodeado en aulas | ✅ Cerrado | `5b5e464` |
 | P7 | `console.log/error` en prod | ✅ Cerrado (commit lleva "P6" por error) | `c93108a` |
-| P8 | Schema v1 obsoleto en producción | ✅ Migración archivar a `legacy` (no aplicada) | `d3a290c` |
+| P8 | Schema v1 obsoleto en producción | ✅ **APLICADO**: DROP de las 5 tablas v1 (estaban vacías) | `d3a290c`, `d43ed88` |
 | P9 | `alert()`/`confirm()` nativos | ✅ Cerrado (alert → sonner; confirm mantenido) | `1006144`, `1cf9a1c` |
 | P10 | Doble helper `auth.ts` y `auth/guard.ts` | ✅ Cerrado | `049d745` |
 | P11 | 47 lint warnings de `any` | ✅ Tipos generados + clientes tipados (47→24 errores, -49%) | `7f2a361` |
