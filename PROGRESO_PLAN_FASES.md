@@ -15,7 +15,7 @@ Este documento es un espejo del estado de ejecución del `PLAN_FASES.md`, escrit
 | P1 | Bypass RLS con service_role | ✅ **PARCIAL** (aft + guardia ✓; aulas documentado pendiente) | `25e524f`, `98466ee`, `4d8d58a`, `df4f107` |
 | P2 | `/api/aft/sync` sin auth | ✅ Cerrado | `7dc9f66` |
 | P3 | Rotar `service_role_key` | ⚪ **Asumido sin rotar** (repo privado, equipo de confianza, 2026-06-20) | — |
-| P4 | RLS anon abierto en `activos_aft` | ✅ Migración escrita (no aplicada) | `13c053d` |
+| P4 | RLS anon abierto en `activos_aft` | ✅ **APLICADO** (anon ve 1 control en_curso y 63 activos; 44 ocultos) | `13c053d` |
 | P5 | Páginas listado como Server Components | ✅ **6 páginas convertidas** | `0b31be3`, `c957dc4`, `580fc5b`, `3c45cf7`, `c9befbc`, `2792e5b` |
 | P6 | `organization_id` hardcodeado en aulas | ✅ Cerrado | `5b5e464` |
 | P7 | `console.log/error` en prod | ✅ Cerrado (commit lleva "P6" por error) | `c93108a` |
