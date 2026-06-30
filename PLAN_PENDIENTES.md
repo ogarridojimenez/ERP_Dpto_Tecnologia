@@ -58,13 +58,13 @@
 
 ---
 
-## Fase 5 — Testing
+## ✅ Fase 5 — Testing (COMPLETADA 2026-06-30)
 
-| # | Tarea | Detalle |
-|---|-------|---------|
-| 5.1 | Tests E2E adicionales (P19) | 5 specs: discrepancias guardia, upload Excel, PDF QR, role-non-owner, mobile-sync |
-| 5.2 | Datos seed estables | `tests/e2e/fixtures/seed.sql` + script `npm run e2e:seed` |
-| 5.3 | CI pipeline | GitHub Actions con lint + typecheck + E2E |
+| # | Tarea | Detalle | Estado |
+|---|-------|---------|--------|
+| 5.1 | Tests E2E adicionales | 2 specs: guardia-discrepancias, sync-api | ✅ commit `84a8f48` |
+| 5.2 | Datos seed | `tests/e2e/fixtures/seed.sql` + `e2e:seed` script | ✅ commit `84a8f48` |
+| 5.3 | CI pipeline | `.github/workflows/ci.yml` — lint + typecheck + build + E2E | ✅ commit `84a8f48` |
 
 ---
 
@@ -88,7 +88,7 @@
 | 2 — UX | 4 | 2 días | Fase 0 ✅ |
 | 3 — Refactor | 4 | 3 días | Fase 1 |
 | 4 — Perf/Build | 3 | 1 día | Fase 0 ✅ |
-| 5 — Testing | 3 | 3 días | Fase 0 (puede empezar en paralelo con Fase 3) |
+| 5 — Testing | 3 | 3 días | Fase 0 ✅ |
 | 6 — Producto | 4 | 2-4 semanas | Fase 0 + Fase 3 |
 
 **Camino crítico**: 0 → 1 → 3 → 6 (RRHH). Fases 2, 4, 5 son paralelizables.

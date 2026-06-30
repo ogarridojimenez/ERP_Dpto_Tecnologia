@@ -3,7 +3,7 @@
 ## Current Status
 
 ### En curso (sesión 2026-06-30)
-**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2+3+4 COMPLETADAS.**
+**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2+3+4+5 COMPLETADAS.**
 
 Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
 
@@ -52,6 +52,12 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
 - **4.2**: Turbopack build confirmado (sin `--webpack`)
 - **4.3**: `test:e2e:ci` script con `start-server-and-test` (build → start → playwright)
 - Build 8.2s | Sin errores
+
+### Fase 5 — Testing (commit `84a8f48`)
+- **5.1**: 2 new specs: `guardia-discrepancias.spec.ts` (flujo cantidades distintas) + `sync-api.spec.ts` (endpoint mobile)
+- **5.2**: `tests/e2e/fixtures/seed.sql` + `npm run e2e:seed`
+- **5.3**: `.github/workflows/ci.yml` con lint + typecheck + build + E2E
+- Build 12.8s | TypeCheck 0 errores
 
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
