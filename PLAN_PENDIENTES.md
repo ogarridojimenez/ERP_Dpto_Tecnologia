@@ -16,12 +16,12 @@
 
 ---
 
-## Fase 1 — Seguridad remanente
+## ✅ Fase 1 — Seguridad remanente (COMPLETADA 2026-06-30)
 
 | # | Tarea | Archivos | Estado |
 |---|-------|----------|--------|
-| 1.1 | P1 aulas — migrar `getAdminClient` a sesión | `actions/aulas.ts` | ✅ |
-| 1.2 | RLS policies: locales + visitas_aulas + medios | `migrations/2026-06-30-aulas-rls-fix.sql` | ✅ Pendiente aplicar SQL |
+| 1.1 | P1 aulas — migrar `getAdminClient` a sesión | `actions/aulas.ts` | ✅ commit `cf6f8d3` |
+| 1.2 | RLS policies: locales + visitas_aulas + medios | `migrations/2026-06-30-aulas-rls-fix.sql` | ✅ Aplicada via CLI |
 | 1.3 | P3 — Rotar `service_role_key` y password Postgres | Acción manual en Supabase Dashboard | 🔴 **Pendiente** |
 
 ---

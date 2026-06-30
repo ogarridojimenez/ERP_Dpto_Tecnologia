@@ -2,8 +2,8 @@
 
 ## Current Status
 
-### En curso (sesión 2026-06-05 PM)
-**Plan de corrección de errores — 6 fases. Fases 0+1+2+3+4+5 COMPLETADAS y deployadas.**
+### En curso (sesión 2026-06-30)
+**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1 COMPLETADAS.**
 
 Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
 
