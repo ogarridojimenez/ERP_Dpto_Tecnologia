@@ -3,7 +3,7 @@
 ## Current Status
 
 ### En curso (sesión 2026-06-30)
-**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1 COMPLETADAS.**
+**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2 COMPLETADAS.**
 
 Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
 
@@ -32,6 +32,13 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
   - 3 fixes menores: `loadData` antes de `useEffect` en guardia/config, `eslint-disable` en aulas/sessionId, `AdminClient` type no usado eliminado de auth.ts
   - Lint: 48 → 47 errores (46 restantes son `any` intencionales en queries Supabase/JSON parsing)
   - TypeCheck y build pasan limpio
+
+### Fase 2 — UX/Resiliencia (commit `efb6bfa`, deploy Ready)
+- **2.1**: 5 `error.tsx` (dashboard, guardia, aft, aulas, rrhh) con botón Reintentar
+- **2.2**: `<Skeleton>` component + 4 `loading.tsx` (dashboard, guardia, aft, aulas)
+- **2.3**: `autoComplete="current-password"` ya existía en login — sin cambios
+- **2.4**: `dashboard-chrome.tsx` — `overflow:hidden` → `scrollbarGutter:stable`
+- TypeCheck 0 errores | Build 10.1s | Lint sin nuevos errores
 
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard

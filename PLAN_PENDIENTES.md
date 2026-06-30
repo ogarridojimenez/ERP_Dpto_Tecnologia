@@ -26,14 +26,14 @@
 
 ---
 
-## Fase 2 — UX / Resiliencia
+## ✅ Fase 2 — UX / Resiliencia (COMPLETADA 2026-06-30)
 
-| # | Tarea | Archivos |
-|---|-------|----------|
-| 2.1 | Error Boundaries (`error.tsx`) | 5 rutas: `(dashboard)/`, `guardia/`, `aft/`, `aulas/`, `rrhh/` |
-| 2.2 | Loading states + Skeleton | `loading.tsx` en dashboard/guardia/aft/aulas + componente `<Skeleton>` |
-| 2.3 | autoComplete en login | `login/page.tsx` — `autoComplete="current-password"` |
-| 2.4 | Scrollbar-gutter mobile sidebar | `dashboard-chrome.tsx` — `overflow:hidden` → `scrollbarGutter:stable` |
+| # | Tarea | Archivos | Estado |
+|---|-------|----------|--------|
+| 2.1 | Error Boundaries (`error.tsx`) | 5 rutas: `(dashboard)/`, `guardia/`, `aft/`, `aulas/`, `rrhh/` | ✅ commit `efb6bfa` |
+| 2.2 | Loading states + Skeleton | `loading.tsx` en dashboard/guardia/aft/aulas + componente `<Skeleton>` | ✅ commit `efb6bfa` |
+| 2.3 | autoComplete en login | `login/page.tsx` — `autoComplete="current-password"` | ✅ ya existía |
+| 2.4 | Scrollbar-gutter mobile sidebar | `dashboard-chrome.tsx` — `overflow:hidden` → `scrollbarGutter:stable` | ✅ commit `efb6bfa` |
 
 ---
 
@@ -85,7 +85,7 @@
 |------|-------|----------|--------------|
 | 0 — Merge | 3 | 1 día | Ninguna |
 | 1 — Seguridad | 3 | 1 día (1.3 manual) | Fase 0 |
-| 2 — UX | 4 | 2 días | Fase 0 |
+| 2 — UX | 4 | 2 días | Fase 0 ✅ |
 | 3 — Refactor | 4 | 3 días | Fase 1 |
 | 4 — Perf/Build | 3 | 1 día | Fase 0 |
 | 5 — Testing | 3 | 3 días | Fase 0 (puede empezar en paralelo con Fase 3) |
