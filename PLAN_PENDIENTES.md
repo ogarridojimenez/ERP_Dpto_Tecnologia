@@ -48,13 +48,13 @@
 
 ---
 
-## Fase 4 — Rendimiento / Build
+## ✅ Fase 4 — Rendimiento / Build (COMPLETADA 2026-06-30)
 
-| # | Tarea | Detalle |
-|---|-------|---------|
-| 4.1 | Fix font preload 404 en producción | `src/app/layout.tsx` — cambiar import de fuentes Geist |
-| 4.2 | Confirmar Turbopack build | `package.json` — `next build` sin `--webpack` (ya verificado) |
-| 4.3 | Script E2E con `next start` | `test:e2e:ci`: build + playwright test en servidor de producción |
+| # | Tarea | Detalle | Estado |
+|---|-------|---------|--------|
+| 4.1 | Fix font preload 404 | Verificado: correcto con `next/font/google` + `display:swap` | ✅ no hay issue |
+| 4.2 | Confirmar Turbopack | `package.json` — `next build` sin `--webpack` | ✅ build usa Turbopack |
+| 4.3 | Script E2E CI | `test:e2e:ci` con `start-server-and-test` | ✅ commit `bd0476a` |
 
 ---
 
@@ -87,7 +87,7 @@
 | 1 — Seguridad | 3 | 1 día (1.3 manual) | Fase 0 |
 | 2 — UX | 4 | 2 días | Fase 0 ✅ |
 | 3 — Refactor | 4 | 3 días | Fase 1 |
-| 4 — Perf/Build | 3 | 1 día | Fase 0 |
+| 4 — Perf/Build | 3 | 1 día | Fase 0 ✅ |
 | 5 — Testing | 3 | 3 días | Fase 0 (puede empezar en paralelo con Fase 3) |
 | 6 — Producto | 4 | 2-4 semanas | Fase 0 + Fase 3 |
 

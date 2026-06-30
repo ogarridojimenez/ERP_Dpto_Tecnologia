@@ -3,7 +3,7 @@
 ## Current Status
 
 ### En curso (sesión 2026-06-30)
-**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2+3 COMPLETADAS.**
+**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2+3+4 COMPLETADAS.**
 
 Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
 
@@ -46,6 +46,12 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
 - **3.3**: `src/lib/schemas/index.ts` con re-exports centralizados
 - **3.4**: `getAdminClient` eliminado de `auth.ts` (dead code, 0 usos)
 - Build 9.4s | TypeCheck 0 errores | Lint sin nuevos errores
+
+### Fase 4 — Perf/Build (commit `bd0476a`, deploy Ready)
+- **4.1**: Font preload verificado — correcto con `next/font/google` + `display:swap`
+- **4.2**: Turbopack build confirmado (sin `--webpack`)
+- **4.3**: `test:e2e:ci` script con `start-server-and-test` (build → start → playwright)
+- Build 8.2s | Sin errores
 
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
