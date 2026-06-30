@@ -6,42 +6,35 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
 jobs:
-  lint:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: "npm"
-
+          node-version: 20
+          cache: npm
       - run: npm ci
 
-      - run: npm run lint
+      - name: TypeCheck
+        run: npm run typecheck
 
-      - run: npm run typecheck || npx tsc --noEmit
+      - name: Lint
+        run: npm run lint
 
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Build
+        run: npm run build
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "npm"
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
 
-      - run: npm ci
-
-      - run: npm test -- --passWithNoTests 2>/dev/null || echo "No tests yet"
-
-  db-migration-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: supabase/setup-cli@v1
-
-      - run: supabase db lint --schema public --local 2>/dev/null || echo "Supabase CLI not configured for CI"
+      - name: E2E tests
+        run: npm run test:e2e:ci
+        env:
+          PLAYWRIGHT_HTML_REPORT: playwright-report

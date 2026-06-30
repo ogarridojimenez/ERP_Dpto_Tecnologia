@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:ci": "start-server-and-test 'next start' http://localhost:3000 'playwright test'",
+    "test:e2e:seed": "psql \"$DATABASE_URL\" -f tests/e2e/fixtures/seed.sql",
     "test:e2e:report": "playwright show-report",
     "gen:types": "npx supabase gen types typescript --project-id bbznwxreyqswhgtdihxe --schema public > src/types/supabase.ts"
   },
