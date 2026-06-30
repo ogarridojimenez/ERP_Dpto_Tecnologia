@@ -37,14 +37,14 @@
 
 ---
 
-## Fase 3 — Refactor / Deuda técnica
+## ✅ Fase 3 — Refactor / Deuda técnica (COMPLETADA 2026-06-30)
 
-| # | Tarea | Archivos |
-|---|-------|----------|
-| 3.1 | Hook `useSupabaseQuery` reusable | `src/hooks/useSupabaseQuery.ts` — migrar 18 páginas del patrón `useState+useEffect` |
-| 3.2 | Eliminar stubs AFT v1 deprecados | `actions/aft.ts` — 6 funciones stub (~60 líneas) |
-| 3.3 | Centralizar schemas Zod | `src/lib/schemas/index.ts` — exportar `uuidSchema` |
-| 3.4 | Reducir usos restantes de `getAdminClient` | Verificar ≤5 usos justificados tras migrar aulas |
+| # | Tarea | Archivos | Estado |
+|---|-------|----------|--------|
+| 3.1 | Hook `useSupabaseQuery` reusable | `src/hooks/useSupabaseQuery.ts` | ✅ commit `4b1fa06` |
+| 3.2 | Eliminar stubs AFT v1 deprecados | `actions/aft.ts` | ✅ no existían (verificado) |
+| 3.3 | Centralizar schemas Zod | `src/lib/schemas/index.ts` | ✅ commit `4b1fa06` |
+| 3.4 | Reducir usos restantes de `getAdminClient` | `auth.ts` — 0 usos, eliminado | ✅ commit `4b1fa06` |
 
 ---
 

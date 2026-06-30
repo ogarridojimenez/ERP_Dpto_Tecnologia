@@ -3,7 +3,7 @@
 ## Current Status
 
 ### En curso (sesión 2026-06-30)
-**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2 COMPLETADAS.**
+**Plan de fases extendido (PLAN_PENDIENTES.md) — Fase 0+1+2+3 COMPLETADAS.**
 
 Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica deploy en Vercel. El usuario está validando la app en su móvil mientras avanzamos.
 
@@ -39,6 +39,13 @@ Workflow acordado con el usuario: cada fase se commitea, pushea y se verifica de
 - **2.3**: `autoComplete="current-password"` ya existía en login — sin cambios
 - **2.4**: `dashboard-chrome.tsx` — `overflow:hidden` → `scrollbarGutter:stable`
 - TypeCheck 0 errores | Build 10.1s | Lint sin nuevos errores
+
+### Fase 3 — Refactor/Deuda técnica (commit `4b1fa06`, deploy Ready)
+- **3.1**: `useSupabaseQuery` hook reusable en `src/hooks/useSupabaseQuery.ts`
+- **3.2**: Stubs AFT no existían (verificado, sin cambios)
+- **3.3**: `src/lib/schemas/index.ts` con re-exports centralizados
+- **3.4**: `getAdminClient` eliminado de `auth.ts` (dead code, 0 usos)
+- Build 9.4s | TypeCheck 0 errores | Lint sin nuevos errores
 
 ### Pendiente
 - **ACCIÓN MANUAL**: rotar `SUPABASE_SERVICE_ROLE_KEY` y password Postgres en Supabase Dashboard
