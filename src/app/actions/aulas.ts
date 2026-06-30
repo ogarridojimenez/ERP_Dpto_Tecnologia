@@ -6,26 +6,12 @@ import {
   guardarRevisionLocalSchema,
   eliminarSessionSchema,
 } from "@/lib/schemas/aulas";
-import { requireAuth, requireRole, ROLES, getAdminClient } from "@/lib/auth";
+import { requireAuth, requireRole, ROLES } from "@/lib/auth";
 import { uuidSchema } from "@/lib/schemas/aft";
 
 // =============================================================================
-// NOTA (P1 de PLAN_FASES — pendiente): este archivo aun usa getAdminClient en
-// todas sus operaciones. NO migrar a cliente con sesion sin resolver primero:
-//
-// 1. Lecturas (obtenerLocalesConMedios, obtenerSesiones, obtenerSession):
-//    visitas_aulas tiene policy SELECT "own" (auth.uid() = user_id O admin /
-//    jefe / especialista_hardware). El rol 'tecnico' SI accede al modulo de
-//    aulas en la UI, pero RLS lo limitaria a sus propias visitas (vacias en
-//    la practica). Migrar romperia la UX.
-//
-// 2. Escrituras sobre locales (crearLocal, toggleBloqueoLocal, eliminarLocal):
-//    ROLES.AULAS_ADMIN = ['admin','jefe','especialista_hardware'], pero las
-//    policies INSERT/UPDATE/DELETE de locales solo admiten admin/jefe. El
-//    cliente admin oculta este desajuste. Migrar romperia a especialistas.
-//
-// Antes de migrar: decidir si ampliar las RLS para incluir especialista_hardware
-// (preferido segun el modelo de roles) o restringir AULAS_ADMIN a admin/jefe.
+// NOTA (P1 resuelto 2026-06-30): se migro de getAdminClient a cliente con
+// sesion. Las RLS se actualizaron en migracion 2026-06-30-aulas-rls-fix.sql.
 // =============================================================================
 
 type ActionResult<T = unknown> = {
@@ -40,10 +26,9 @@ type ActionResult<T = unknown> = {
 
 export async function obtenerLocalesConMedios() {
   try {
-    await requireAuth();
-    const admin = getAdminClient();
+    const { supabase } = await requireAuth();
 
-    const { data: locales, error: lErr } = await admin
+    const { data: locales, error: lErr } = await supabase
       .from("locales")
       .select("id, codigo, nombre, tipo, estado, observaciones")
       .is("deleted_at", null)
@@ -52,7 +37,7 @@ export async function obtenerLocalesConMedios() {
     if (lErr) return { success: false, error: lErr.message } as ActionResult;
     if (!locales) return { success: true, data: [] } as ActionResult;
 
-    const { data: medios, error: mErr } = await admin
+    const { data: medios, error: mErr } = await supabase
       .from("medios")
       .select("id, codigo, nombre, locale_id, tipo_medio_id, estado, marca, modelo")
       .is("deleted_at", null);
@@ -78,10 +63,9 @@ export async function obtenerLocalesConMedios() {
 
 export async function obtenerSesiones() {
   try {
-    await requireAuth();
-    const admin = getAdminClient();
+    const { supabase } = await requireAuth();
 
-    const { data, error } = await admin
+    const { data, error } = await supabase
       .from("visitas_aulas")
       .select(`
         session_id,
@@ -142,10 +126,9 @@ export async function obtenerSesiones() {
 export async function obtenerSession(sessionId: string) {
   try {
     const validatedId = uuidSchema.parse(sessionId);
-    await requireAuth();
-    const admin = getAdminClient();
+    const { supabase } = await requireAuth();
 
-    const { data: visitas, error: vErr } = await admin
+    const { data: visitas, error: vErr } = await supabase
       .from("visitas_aulas")
       .select(`
         id, session_id, locale_id, fecha_visita, revisor,
@@ -163,7 +146,7 @@ export async function obtenerSession(sessionId: string) {
 
     const visitaIds = visitas.map((v) => v.id);
 
-    const { data: detalles, error: dErr } = await admin
+    const { data: detalles, error: dErr } = await supabase
       .from("detalles_visita")
       .select(`
         id, visita_id, medio_id, estado, observaciones,
@@ -197,8 +180,7 @@ export async function obtenerSession(sessionId: string) {
 
 export async function iniciarSession(formData: FormData) {
   try {
-    const { user } = await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase, user } = await requireRole(ROLES.AULAS_ADMIN);
 
     const raw = {
       revisor: formData.get("revisor") as string,
@@ -213,7 +195,7 @@ export async function iniciarSession(formData: FormData) {
       } as ActionResult;
     }
 
-    const { data: locales, error: lErr } = await admin
+    const { data: locales, error: lErr } = await supabase
       .from("locales")
       .select("id, codigo, estado")
       .is("deleted_at", null)
@@ -224,7 +206,7 @@ export async function iniciarSession(formData: FormData) {
     // Lee la organization del perfil del usuario. Si no la tiene, deja
     // null y que la fila herede la default de la columna si existe; no
     // hardcodeamos el UUID.
-    const { data: profile } = await admin
+    const { data: profile } = await supabase
       .from("profiles")
       .select("organization_id")
       .eq("id", user.id)
@@ -243,7 +225,7 @@ export async function iniciarSession(formData: FormData) {
       user_id: user.id,
     }));
 
-    const { error: vErr } = await admin.from("visitas_aulas").insert(visitas);
+    const { error: vErr } = await supabase.from("visitas_aulas").insert(visitas);
     if (vErr) return { success: false, error: vErr.message } as ActionResult;
 
     revalidatePath("/aulas");
@@ -255,8 +237,7 @@ export async function iniciarSession(formData: FormData) {
 
 export async function guardarRevisionLocal(formData: FormData) {
   try {
-    const { user } = await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase, user } = await requireRole(ROLES.AULAS_ADMIN);
 
     const rawDetalles: Array<{ medio_id: string; estado: string; observaciones: string }> = [];
     let i = 0;
@@ -284,7 +265,7 @@ export async function guardarRevisionLocal(formData: FormData) {
       } as ActionResult;
     }
 
-    const { error: vErr } = await admin
+    const { error: vErr } = await supabase
       .from("visitas_aulas")
       .update({
         estado_general: parsed.data.estado_general,
@@ -296,7 +277,7 @@ export async function guardarRevisionLocal(formData: FormData) {
     if (vErr) return { success: false, error: vErr.message } as ActionResult;
 
     for (const detalle of parsed.data.detalles) {
-      const { error: dErr } = await admin.from("detalles_visita").upsert(
+      const { error: dErr } = await supabase.from("detalles_visita").upsert(
         {
           visita_id: parsed.data.visita_id,
           medio_id: detalle.medio_id,
@@ -321,8 +302,7 @@ export async function guardarRevisionLocal(formData: FormData) {
 
 export async function eliminarSession(formData: FormData) {
   try {
-    await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase } = await requireRole(ROLES.AULAS_ADMIN);
 
     const raw = { session_id: formData.get("session_id") as string };
     const parsed = eliminarSessionSchema.safeParse(raw);
@@ -330,7 +310,7 @@ export async function eliminarSession(formData: FormData) {
       return { success: false, error: "ID de sesión inválido" } as ActionResult;
     }
 
-    const { error } = await admin
+    const { error } = await supabase
       .from("visitas_aulas")
       .update({ deleted_at: new Date().toISOString() })
       .eq("session_id", parsed.data.session_id);
@@ -347,10 +327,9 @@ export async function eliminarSession(formData: FormData) {
 export async function toggleBloqueoLocal(localeId: string) {
   try {
     const validatedId = uuidSchema.parse(localeId);
-    await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase } = await requireRole(ROLES.AULAS_ADMIN);
 
-    const { data: locale, error: lErr } = await admin
+    const { data: locale, error: lErr } = await supabase
       .from("locales")
       .select("estado")
       .eq("id", validatedId)
@@ -361,7 +340,7 @@ export async function toggleBloqueoLocal(localeId: string) {
 
     const nuevoEstado = locale.estado === "inactivo" ? "activo" : "inactivo";
 
-    const { error: uErr } = await admin
+    const { error: uErr } = await supabase
       .from("locales")
       .update({ estado: nuevoEstado })
       .eq("id", validatedId);
@@ -377,10 +356,9 @@ export async function toggleBloqueoLocal(localeId: string) {
 
 export async function crearLocal(formData: FormData) {
   try {
-    const { user } = await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase, user } = await requireRole(ROLES.AULAS_ADMIN);
 
-    const { data: profile } = await admin
+    const { data: profile } = await supabase
       .from("profiles")
       .select("organization_id")
       .eq("id", user.id)
@@ -400,7 +378,7 @@ export async function crearLocal(formData: FormData) {
       return { success: false, error: "Tipo de local inválido" } as ActionResult;
     }
 
-    const { data: nuevo, error: cErr } = await admin
+    const { data: nuevo, error: cErr } = await supabase
       .from("locales")
       .insert({
         organization_id: profile?.organization_id ?? null,
@@ -425,15 +403,14 @@ export async function crearLocal(formData: FormData) {
 
 export async function eliminarLocal(formData: FormData) {
   try {
-    await requireRole(ROLES.AULAS_ADMIN);
-    const admin = getAdminClient();
+    const { supabase } = await requireRole(ROLES.AULAS_ADMIN);
 
     const localeId = formData.get("locale_id") as string;
     if (!localeId) return { success: false, error: "ID de local requerido" } as ActionResult;
 
     const validatedId = uuidSchema.parse(localeId);
 
-    const { error: dErr } = await admin
+    const { error: dErr } = await supabase
       .from("locales")
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", validatedId);

@@ -33,8 +33,7 @@ export async function requireAuth(): Promise<AuthContext> {
   } = await supabase.auth.getUser();
   if (!user) throw new AuthError("No autenticado");
 
-  const admin = getAdminClient();
-  const { data: profile } = await admin
+  const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
