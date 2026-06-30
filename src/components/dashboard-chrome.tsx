@@ -64,12 +64,12 @@ export function DashboardChrome({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (open) {
-      document.body.style.overflow = "hidden";
+      document.body.style.scrollbarGutter = "stable";
     } else {
-      document.body.style.overflow = "";
+      document.body.style.scrollbarGutter = "";
     }
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.scrollbarGutter = "";
     };
   }, [open]);
 
